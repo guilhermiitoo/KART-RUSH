@@ -59,6 +59,21 @@ DX.addMap({id:'gelo',nome:'PICO GELADO',ico:'❄️',tema:'gelo',dif:2,
   /* castelo de gelo no morro */
   {const p=B.at(B.uOf(15.2),-(hw+70)),K=DX.kit();const tw=(x,z,r,h)=>{K.cyl(r*.85,r,h,Gl(0xBFEFFF),x,h/2,z,null,null,8);K.cyl(r*.85,r,h,Fl(0x9FD8F0),x,h/2,z,null,[.9,1,.9],8);K.cone(r*1.2,r*2.6,Gw(0x7FE8FF),x,h+r*1.3,z,null,null,8)};
    tw(0,0,7,34);tw(-13,4,4.5,22);tw(13,4,4.5,24);tw(-7,-9,3.5,28);tw(8,-9,3.5,18);K.box(26,10,3,Fl(0xBFE4F8),0,5,6);K.lowball(26,Ha(0x4FC8FF),0,16,0);B.put(K,p.x,p.y-1,p.z,p.h)}
+  /* PISTA DE PATINAÇÃO no meio do mapa: pinguins patinando (e um que vive escorregando de barriga) */
+  {const c=B.centro(70),Rx=34,Rz=22,K=DX.kit();K.def='flat';
+   K.cyl(1,1,8,Fl(0xDDE8F4),0,-4,0,null,[Rx+3,1,Rz+3],28);K.cyl(1,1,.4,P(0xBFEAFF),0,.2,0,null,[Rx,1,Rz],28);
+   for(let i=0;i<40;i++){const a=i/40*PI*2,x=Math.cos(a)*(Rx+1.2),z=Math.sin(a)*(Rz+1.2),a2=(i+1)/40*PI*2,x2=Math.cos(a2)*(Rx+1.2),z2=Math.sin(a2)*(Rz+1.2);K.limb([x,1.6,z],[x2,1.6,z2],.35,P(i%2?0xD9313F:0xFFFFFF));K.cyl(.25,.25,1.6,0xFFFFFF,x,.9,z,null,null,5)}
+   for(let i=0;i<8;i++){const a=i/8*PI*2,x=Math.cos(a)*(Rx+5),z=Math.sin(a)*(Rz+5);K.cyl(.3,.4,11,0x3A4660,x,5.5,z,null,null,6);K.lowball(.9,Gw(0xFFD27A),x,11.4,z);K.lowball(3,Ha(0xFFB84A),x,11.4,z);
+    const b=(i+1)/8*PI*2,x2=Math.cos(b)*(Rx+5),z2=Math.sin(b)*(Rz+5);for(let l=1;l<6;l++){const f=l/6;K.lowball(.35,Gw([0xFF4D6D,0x7CF7FF,0xFFE14A,0x34C759][l%4]),lerp(x,x2,f),11-Math.sin(f*PI)*2.4,lerp(z,z2,f))}}
+   const base=B.put(K,c.x,c.y,c.z,0);
+   const pen=[];for(let i=0;i<9;i++){const P2=DX.kit();P2.ball(.9,0x1E2430,0,1.1,0,[1,1.35,1]);P2.ball(.7,0xFFFFFF,0,1,.35,[.9,1.25,.7]);P2.ball(.6,0x1E2430,0,2.5,0);P2.cone(.2,.5,P(0xFFB020),0,2.45,.65,[PI/2,0,0],null,5);P2.lowball(.1,0xFFFFFF,-.25,2.7,.5);P2.lowball(.1,0xFFFFFF,.25,2.7,.5);
+    P2.tor(.55,.18,P([0xD9313F,0x34C759,0x0A84FF,0xFFD43B][i%4]),0,2.05,0,[PI/2,0,0]);P2.box(.12,.12,1.1,Mt(0xD5DAE2),-.4,.05,.2);P2.box(.12,.12,1.1,Mt(0xD5DAE2),.4,.05,.2);
+    for(const s of[-1,1]){const A=P2.sub('w'+s,s*.95,1.5,0);A.ball(.3,0x1E2430,s*.15,-.3,0,[.4,1.5,.8])}
+    const g=B.put(P2,0,0,0,0,1.7);pen.push({g,a:i/9*PI*2,v:.35+(i%3)*.12,r:.55+(i%4)*.1,dir:i%2?1:-1})}
+   B.anim((t,dt)=>{pen.forEach((p,i)=>{p.a+=dt*p.v*p.dir;const belly=i===4,x=Math.cos(p.a)*Rx*p.r,z=Math.sin(p.a)*Rz*p.r,u=p.g.userData.parts;p.g.position.set(c.x+x,c.y+.4,c.z+z);
+    p.g.rotation.y=Math.atan2(-Math.sin(p.a)*Rx*p.dir,Math.cos(p.a)*Rz*p.dir)+(belly?0:Math.sin(t*3+i)*.25);
+    if(belly){p.g.rotation.x=PI/2-.2;p.g.position.y=c.y+1.2;p.g.rotation.z=Math.sin(t*1.5)*.3}else{p.g.rotation.z=Math.sin(t*3+i)*.18;p.g.position.y=c.y+.4+Math.abs(Math.sin(t*6+i))*.15}
+    u['w-1'].rotation.z=-.4-Math.sin(t*6+i)*.4;u.w1.rotation.z=.4+Math.sin(t*6+i)*.4})})}
   /* interativos: bonecos de neve e pinguins na beira da pista */
   const sm=DX.kit();sm.ball(1.3,SNOW,0,1.2,0);sm.ball(.95,SNOW,0,2.9,0);sm.cone(.2,.9,P(0xFF7A1A),0,2.95,1,[PI/2,0,0],null,6);sm.lowball(.13,0x14141C,-.35,3.2,.8);sm.lowball(.13,0x14141C,.35,3.2,.8);sm.cyl(.7,.7,.9,0x14141C,0,4,0,null,null,8);sm.cyl(1,1,.12,0x14141C,0,3.6,0,null,null,8);sm.tor(.75,.22,P(0x34C759),0,2.2,0,[PI/2,0,0]);
   const sp=[];[.1,.16,.22,.3,.42,.52,.8,.86,.9].forEach((u,i)=>{if(nearGap(u,12))return;const p=B.at(u,(i%2?1:-1)*(hw-7-i%3*3));sp.push({x:p.x,y:p.y,z:p.z,s:1,r:p.h+PI})});B.knock(sm,sp,{rad:2,cor:0xFFFFFF,som:300});

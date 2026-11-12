@@ -54,6 +54,19 @@ DX.addMap({id:'candy',nome:'REINO DOCE',ico:'🍭',tema:'candy',dif:3,espH:30,es
   /* cata-ventos de pirulito girando na largada */
   {const gs=[];[.03,.06,.975].forEach((u,i)=>{const K=DX.kit();K.cyl(.6,.8,22,P(0xFFFFFF),0,11,0,null,null,8);const W=K.sub('w',0,23,1);for(let k=0;k<8;k++)W.ext([[0,0],[9,2.4],[9,-2.4]],.5,P(CORES[k%6]),0,0,0,[0,0,k/8*PI*2]);W.cyl(1.6,1.6,1.4,P(0xFFFFFF),0,0,.3,[PI/2,0,0]);
     const p=B.at(u,(i%2?1:-1)*(hw+22));gs.push(B.put(K,p.x,p.y-1,p.z,p.h+(i%2?-1:1)*PI/2).userData.parts.w)});B.anim((t,dt)=>gs.forEach((w,i)=>w.rotation.z+=dt*(1.2+i*.4)))}
+  /* RODA-GIGANTE DOCE no meio do mapa: cabines de cupcake com bichinhos de goma acenando */
+  {const c=B.centro(70),R=30,Hc=R+8,K=DX.kit();K.def='flat';
+   for(const z of[-5,5])for(const s of[-1,1])K.limb([s*18,0,z*2.2],[0,Hc,z],1.1,P(0xFFFFFF));for(const z of[-5,5])for(const s of[-1,1])for(let i=0;i<5;i++)K.cyl(1.2,1.2,1.4,P(0xFF4D6D),s*(18-i*3.6)*.98,1.6+i*7.2,z*(2.2-i*.24),[0,0,s*.45],null,8);
+   K.cyl(12,13,2,Fl(0xFFC6E2),0,1,0,null,null,16);K.cyl(1.4,1.4,12,Mt(0xD5DAE2),0,Hc,0,[PI/2,0,0]);
+   const Wh=K.sub('roda',0,Hc,0);Wh.tor(R,.9,P(0xFF4D9A),0,0,-4.4,null,0,null,40);Wh.tor(R,.9,P(0x4FC8FF),0,0,4.4,null,0,null,40);Wh.tor(R*.45,.6,P(0xFFD43B),0,0,0,null,0,null,24);Wh.ball(3,P(0xFFFFFF),0,0,0);
+   for(let i=0;i<12;i++){const a=i/12*PI*2,x=Math.cos(a)*R,y=Math.sin(a)*R;for(const z of[-4.4,4.4])Wh.limb([0,0,z],[x,y,z],.45,P(0xFFFFFF));Wh.limb([x,y,-4.4],[x,y,4.4],.4,P(0xFFFFFF));
+    for(let l=0;l<3;l++){const b=a+(l+.5)/36*PI*2;Wh.lowball(.7,Gw([0xFFE14A,0xFF7CD8,0x7CF7FF][(i+l)%3]),Math.cos(b)*(R+.9),Math.sin(b)*(R+.9),-4.4);Wh.lowball(.7,Gw([0xFFE14A,0xFF7CD8,0x7CF7FF][(i+l+1)%3]),Math.cos(b)*(R+.9),Math.sin(b)*(R+.9),4.4)}}
+   const cab=[];for(let i=0;i<10;i++){const a=i/10*PI*2,Cb=Wh.sub('c'+i,Math.cos(a)*R,Math.sin(a)*R,0),cc=CORES[i%6];Cb.limb([0,0,0],[0,-2.4,0],.2,Mt(0xD5DAE2));
+    Cb.cyl(2.6,2,3.2,Fl(0xE8B878),0,-5.6,0,null,null,10);Cb.half(2.9,P(cc),0,-2.6,0,[1,.75,1]);Cb.ball(.5,P(0xE8202A),0,-.6,0);
+    for(const s of[-1,1]){const bc=CORES[(i+3+(s>0?1:0))%6],Bh=Cb.sub('b'+i+s,s*1,-3.6,0);Bh.ball(.7,P(bc),0,0,0,[1,1.15,.9]);Bh.ball(.62,P(bc),0,1.05,0);Bh.lowball(.26,P(bc),-.42,1.55,0);Bh.lowball(.26,P(bc),.42,1.55,0);Bh.lowball(.09,0x2A1A20,-.22,1.15,.55);Bh.lowball(.09,0x2A1A20,.22,1.15,.55);
+     const Ar=Bh.sub('a'+i+s,s*.6,.4,0);Ar.limb([0,0,0],[s*.5,.9,0],.22,P(bc))}cab.push(Cb)}
+   const g=B.put(K,c.x,c.y-.5,c.z,Math.random()*PI),q=g.userData.parts;
+   B.anim((t,dt)=>{q.roda.rotation.z+=dt*.16;for(let i=0;i<10;i++){const Cb=q['c'+i];Cb.rotation.z=-q.roda.rotation.z+Math.sin(t*1.6+i)*.08;for(const s of[-1,1]){const A=q['a'+i+s];if(A)A.rotation.z=s*(.3+Math.max(0,Math.sin(t*5+i+s))*1.1)}}})}
   /* interativos: ursinhos de goma e marshmallows */
   CORES.slice(0,3).forEach((c,ci)=>{const K=DX.kit();K.ball(1,P(c),0,1.2,0,[1,1.2,.85]);K.ball(.8,P(c),0,2.8,0);for(const s of[-1,1]){K.lowball(.32,P(c),s*.6,3.5,0);K.lowball(.42,P(c),s*1,1.7,.3);K.lowball(.45,P(c),s*.55,.3,.3)}K.lowball(.1,0x2A1A20,-.3,3,.7);K.lowball(.1,0x2A1A20,.3,3,.7);K.lowball(.2,P(0xFFFFFF),0,2.65,.72,[1,.7,.6]);
    const pts=[];[.09,.2,.34,.47,.62,.74,.83,.91].forEach((u,i)=>{if(i%3!==ci||nearGap(u,12))return;for(let q=0;q<2;q++){const p=B.at(u+q*.004,(i%2?1:-1)*(hw-6-q*5));pts.push({x:p.x,y:p.y,z:p.z,s:1,r:p.h+PI})}});B.knock(K,pts,{rad:1.8,cor:c,som:420})});

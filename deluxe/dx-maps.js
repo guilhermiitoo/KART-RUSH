@@ -17,6 +17,7 @@ function terrain(d,o){const hw=W/2,cell=o.cell||9,mg=o.margin||520,F=o.fall||70,
  (d.pon||[]).forEach(([a,b])=>{for(let i=Math.round(a*N)-10;i<=Math.round(b*N)+10;i++)BR[ts(i)]=1});
  d.gI.forEach(g=>{if(HT[ts(g.a)]>4)for(let i=g.a-1;i<=g.b+1;i++)GP[ts(i)]=1});
  (d.dx.tun||[]).forEach(([a,b])=>{for(let i=a;i<=b;i++)TN[ts(i)]=1});
+ (d.dx.br||[]).forEach(([a,b])=>{for(let i=a;i<=b;i++)BR[ts(i)]=1});
  const R2=(C+F+40)**2,C2=C*C,bed=o.bed==null?-3:o.bed,TR=hw+5;
  for(let iz=0;iz<=nz;iz++)for(let ix=0;ix<=nx;ix++){const x=x0+ix*cell,z=z0+iz*cell;let dm=1e18,bi=0,low=1e9,ws=0,wh=0;
   for(let j=0;j<N;j+=2){const p=SP[j],dx=p.x-x,dz=p.z-z,d2=dx*dx+dz*dz;if(d2<dm){dm=d2;bi=j}
@@ -55,6 +56,8 @@ function tools(d){const X=d.dx,hw=W/2,T=X.T,o3=new THREE.Object3D();
   scatter(n,fn,area){const r=[],a=area||[T.x0+60,T.x1-60,T.z0+60,T.z1-60];for(let t=0;t<n*14&&r.length<n;t++){const x=a[0]+Math.random()*(a[1]-a[0]),z=a[2]+Math.random()*(a[3]-a[2]),h=T.ground(x,z),s=fn(x,z,h,T.dist(x,z));if(s)r.push({x,y:h,z,s,r:Math.random()*6.283})}return r},
   /* fileira ao longo da pista: de u0 a u1, a cada 'passo' metros, deslocada 'lat' */
   along(u0,u1,passo,lat,fn){const out=[];for(let u=u0;u<u1;u+=passo/LEN){const p=B.at(u,lat);if(!fn||fn(p,u))out.push({x:p.x,y:p.y,z:p.z,s:1,r:p.h})}return out},
+  /* o lugar mais livre perto do meio do mapa (para as atrações centrais) */
+  centro(rad){let cx=0,cz=0;SP.forEach(p=>{cx+=p.x/N;cz+=p.z/N});let best=null;for(let gx=-10;gx<=10;gx++)for(let gz=-10;gz<=10;gz++){const x=cx+gx*(T.x1-T.x0)/26,z=cz+gz*(T.z1-T.z0)/26,dd=T.dist(x,z),sc=Math.min(dd,rad*1.6)-.15*Math.hypot(x-cx,z-cz);if(!best||sc>best.sc)best={x,z,sc,dd,y:T.ground(x,z)}}return best},
   /* espalha um modelo (kit) em vários lugares com 1 desenho por material */
   inst(K,pts,op){op=op||{};const out=[];if(!pts.length)return out;for(const b in K.node.bk){const m=new THREE.InstancedMesh(DX.bake(K.node.bk[b]),op.mat||DX.mats[b]||DX.mats.flat,pts.length);
    pts.forEach((p,i)=>{o3.position.set(p.x,p.y+(op.dy||0),p.z);o3.rotation.set(op.tilt?(Math.random()-.5)*op.tilt:0,p.r||0,op.tilt?(Math.random()-.5)*op.tilt:0);o3.scale.setScalar(p.s||1);o3.updateMatrix();m.setMatrixAt(i,o3.matrix)});
@@ -76,13 +79,14 @@ function tools(d){const X=d.dx,hw=W/2,T=X.T,o3=new THREE.Object3D();
 
 /* ---------- registro de um mapa ---------- */
 DX.addMap=function(m){const P={id:m.id,nome:m.nome,tema:m.tema,espH:m.espH,espR:m.espR,pts:m.pts.map(a=>({x:a[0],z:a[1],h:a[2],m:a[3]||''}))};
- const d=Object.assign(PISTAS.defPista(P),{id:m.id,nome:m.nome,ico:m.ico,dif:m.dif,esc:ESC*.85,editavel:false,sub:m.sub,menu:m.menu,saia:m.saia,pit:m.pit,pitMat:m.pitMat,fallMsg:m.fallMsg,pitCor:m.pitCor,
+ const d=Object.assign(PISTAS.defPista(P),{cenV:m.cenV||'dx2',neg:!!m.neg,id:m.id,nome:m.nome,ico:m.ico,dif:m.dif,esc:ESC*.85,editavel:false,sub:m.sub,menu:m.menu,saia:m.saia,pit:m.pit,pitMat:m.pitMat,fallMsg:m.fallMsg,pitCor:m.pitCor,
   sky:m.fog[0],fogC:m.fog[0],fogN:m.fog[1]/1.3,fogF:m.fog[2]/1.3,hemi:m.hemi,sun:m.sun,road:m.road,bar:m.bar,cone:m.cone,mm:m.mm,slipTex:m.slipTex,dx:{def:m,sky:m.sky,dust:m.dust,sunDir:m.sunDir,anim:[],knock:[],tun:[]},
   build(dd){const X=dd.dx;X.anim=[];X.knock=[];X.T=terrain(dd,m.ter);X.ground=X.T.ground;world.add(X.T.mesh);const B=tools(dd);m.cena(B,dd);dd.arches=m.placas?m.placas(B):[]}});
  STAGES[m.id]=d;MAPS[m.id]=d;return d};
 /* trechos próprios (gelo escorregadio, túnel) dependem do traçado pronto */
 {const _st=setTrack;setTrack=function(d){_st(d);if(!d.dx||!d.dx.def)return;const m=d.dx.def,P=d.P.pts,uO=k=>{let e=0;for(let i=0;i<k;i++)if(P[i].m==='espiral')e+=15;return d.uk[k+e]};
  d.iI=(m.gelo||[]).map(g=>({a:Math.round(uO(g[0])*N),b:Math.round(uO(g[1])*N),l0:g[2],l1:g[3]}));
+ const R0=t=>Math.round(lerp(uO(Math.floor(t)),uO(Math.floor(t)+1),t%1)*N);d.dx.br=(m.pontes||[]).map(t=>[R0(t[0]),R0(t[1])]);
  d.dx.tun=(m.tuneis||[]).map(t=>[Math.round(lerp(uO(Math.floor(t[0])),uO(Math.floor(t[0])+1),t[0]%1)*N),Math.round(lerp(uO(Math.floor(t[1])),uO(Math.floor(t[1])+1),t[1]%1)*N)])}}
 
 /* ---------- troca de mapa: céu, sol e neblina ---------- */
@@ -116,9 +120,9 @@ DX.sea=function(B,y,mat,kind,flow){const T=B.d.dx.T,m=new THREE.Mesh(new THREE.P
 /* ---------- neve/pétalas/cinzas caindo em volta de qualquer câmera (custo zero no processador) ---------- */
 DX.fall=function(B,o){const n=o.n||1400,P=new Float32Array(n*3),S=new Float32Array(n);for(let i=0;i<n;i++){P[i*3]=Math.random()*o.box;P[i*3+1]=Math.random()*o.box;P[i*3+2]=Math.random()*o.box;S[i]=.5+Math.random()}
  const g=new THREE.BufferGeometry();g.setAttribute('position',new THREE.BufferAttribute(P,3));g.setAttribute('aS',new THREE.BufferAttribute(S,1));
- const u={t:{value:0},uH:DX.FX.smoke.g?{value:400}:{value:400},col:{value:LN(o.col)},box:{value:o.box},vel:{value:new V3(o.vx||0,o.vy||-6,o.vz||0)},sz:{value:o.size||.3}};
+ const u={t:{value:0},uH:{value:400},col:{value:LN(o.col)},box:{value:o.box},vel:{value:new V3(o.vx||0,o.vy||-6,o.vz||0)},sz:{value:o.size||.3},maxY:{value:o.maxY==null?1e5:o.maxY}};
  const m=new THREE.Points(g,new THREE.ShaderMaterial({uniforms:u,transparent:true,depthWrite:false,
-  vertexShader:'attribute float aS;uniform float t,uH,box,sz;uniform vec3 vel;varying float a;void main(){vec3 p=position+vel*t*aS+vec3(sin(t*.7+position.y)*1.5,0.,cos(t*.6+position.x)*1.5);p=mod(p-cameraPosition,box)-box*.5+cameraPosition;vec4 mv=viewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;float dd=-mv.z;a=smoothstep(box*.5,box*.3,dd)*smoothstep(1.,6.,dd);gl_PointSize=sz*aS*uH/max(.1,dd);}',
+  vertexShader:'attribute float aS;uniform float t,uH,box,sz,maxY;uniform vec3 vel;varying float a;void main(){vec3 p=position+vel*t*aS+vec3(sin(t*.7+position.y)*1.5,0.,cos(t*.6+position.x)*1.5);p=mod(p-cameraPosition,box)-box*.5+cameraPosition;vec4 mv=viewMatrix*vec4(p,1.);gl_Position=projectionMatrix*mv;float dd=-mv.z;a=smoothstep(box*.5,box*.3,dd)*smoothstep(1.,6.,dd)*step(p.y,maxY);gl_PointSize=sz*aS*uH/max(.1,dd);}',
   fragmentShader:'uniform vec3 col;varying float a;void main(){float d=length(gl_PointCoord-.5)*2.;gl_FragColor=vec4(col,a*smoothstep(1.,.3,d)*.9);}'}));
  m.frustumCulled=false;m.renderOrder=5;m.onBeforeRender=(r,s,cam)=>{const v=new THREE.Vector4();r.getCurrentViewport(v);u.uH.value=v.w*cam.projectionMatrix.elements[5]*.5};B.world.add(m);B.anim(t=>u.t.value=t);return m};
 DX.mapKit={terrain,tools};

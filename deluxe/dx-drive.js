@@ -10,21 +10,27 @@
 if(window.PHONE)throw new Error('PHONEMODE');
 (()=>{const {damp,lerp,V3}=DX,PI=Math.PI;
 const DRC=[0xBFD3E6,0x4FB8FF,0xFF9A1F,0xC66BFF];
+/* velocidade Deluxe: tudo 22% mais rápido (robôs, câmera e curvas acompanham) */
+const F=DX.SPD=1.22;
 const dust=()=>(ST&&ST.dx&&ST.dx.dust)||(ST&&ST.pit==='lava'?0x6A5A52:0xC9C2B4);
 /* ponto do kart no mundo: lx para o lado (esquerda +), lz para frente */
 const wp=(k,lx,lz,o)=>{const s=Math.sin(k.h),c=Math.cos(k.h);o.x=k.x+s*lz+c*lx;o.z=k.z+c*lz-s*lx;return o},_w={x:0,z:0};
 
 /* ---------- FÍSICA ---------- */
 {const _v=vertical;vertical=function(k,dt){k.dxVy=k.vy;_v(k,dt)}}
+/* pulo: mesma altura de antes mesmo andando mais rápido */
+on('jump',k=>{if(k.vy>0)k.vy/=Math.sqrt(F)});
+/* robôs: pensam na escala antiga de velocidade (os limites deles continuam valendo) */
+{const _bi=botInput;botInput=function(k,dt){const v=k.v;k.v=v/F;try{return _bi(k,dt)}finally{k.v=v}}}
 stepKart=function(k,inp,dt){
  if(k.fallT>0){k.fallT-=dt;k.v=0;k.y=Math.max(-9,k.y-dt*6);if(k.fallT<=0)respawn(k);return}
  const go=state==='go'||k.fin;let thr=go?inp.thr:0;
  if(k.spin>0){k.spin-=dt;k.h+=dt*11;k.v*=Math.pow(.15,dt);thr=0}
  k.slow=Math.max(0,k.slow-dt);k.boost=Math.max(0,k.boost-dt);k.ghost=Math.max(0,k.ghost-dt);if(k.boost<=0)k.dxBoostLv=0;
  const ice=!k.air&&onIce(k),peso=VEH[k.veh].peso||1;k.thrIn=thr;k.dxIce=ice;
- const maxV=((k.slow>0?24:58)+(k.boost>0?38:0))*mulOf('speed',k);
+ const maxV=((k.slow>0?24:58)+(k.boost>0?38:0))*F*mulOf('speed',k);
  if(!k.air){const u=clamp(k.v/maxV,0,1);
-  if(thr>0)k.v+=thr*(k.boost>0?80:54-28*u*u)*(ice?.7:1)*mulOf('accel',k)*dt;else if(thr<0)k.v+=thr*(k.v>0?78:26)*dt;else k.v-=Math.sign(k.v)*Math.min(Math.abs(k.v),(ice?5:12)*dt);
+  if(thr>0)k.v+=thr*(k.boost>0?96:(54-26*u*u)*1.32)*(ice?.7:1)*mulOf('accel',k)*dt;else if(thr<0)k.v+=thr*(k.v>0?78:26)*dt;else k.v-=Math.sign(k.v)*Math.min(Math.abs(k.v),(ice?5:12)*dt);
   if(k.v>maxV)k.v=Math.max(maxV,k.v-90*dt);k.v=Math.max(-18,k.v)}
  const sp=Math.abs(k.v);
  /* volante com inércia */
@@ -34,7 +40,7 @@ stepKart=function(k,inp,dt){
  if(quer&&!k.dOn&&Math.abs(inp.st)>.35){k.dOn=true;k.dDir=Math.sign(inp.st);k.drift=0;if(k.dx){k.dx.bv+=7;k.dx.sq=-.25}if(k.human)sfx(260,.08,'triangle',.05)}
  if(k.dOn){if(quer){k.drift+=dt;st=k.dDir*clamp(.62+.55*inp.st*k.dDir,.1,1.15)}
   else if(!k.air){const lv=k.drift>=2?3:k.drift>=1.2?2:k.drift>=.6?1:0;if(lv){k.boost=Math.max(k.boost,[0,.7,1.2,1.9][lv]);k.dxBoostLv=lv;sfx([0,480,600,760][lv],.3,'sawtooth');if(lv>1)rumble(k,.5);emit('driftboost',k,lv)}k.dOn=false;k.drift=0}}
- if(k.spin<=0)k.h+=st*mulOf('steer',k)*(1.55+(k.dOn?.95:0))*(ice?1.15:1)*(k.air?.35:1)*clamp(sp/22,0,1)*(1.25-sp/150)*(k.v<0?-1:1)*dt;
+ if(k.spin<=0)k.h+=st*mulOf('steer',k)*(1.55+(k.dOn?.95:0))*(ice?1.15:1)*(k.air?.35:1)*clamp(sp/22,0,1)*(1.25-sp/(150*F))*(k.v<0?-1:1)*dt;
  /* direção do movimento: no drift a traseira escapa (o kart aponta mais para dentro do que anda); no gelo escorrega */
  if(!k.air&&k.spin<=0){const gr=ice?1.6:k.dOn?5.2:16;k.mh+=wrap(k.h-k.mh)*(1-Math.exp(-gr*dt))}
  k.x+=Math.sin(k.mh)*k.v*dt;k.z+=Math.cos(k.mh)*k.v*dt;
@@ -100,7 +106,7 @@ on('chegou',k=>{if(!k.human&&k.place>1)return;for(let i=0;i<70;i++){const a=Math
 /* ---------- CÂMERA ---------- */
 const _p=new V3(),_l=new V3(),nz=(t,s)=>Math.sin(t*s)+Math.sin(t*s*1.37+1.3)+Math.sin(t*s*2.11+4.1)*.6;
 const gAt=(x,z)=>ST&&ST.dx&&ST.dx.ground?ST.dx.ground(x,z):-1e9;
-function camera(k,dt){const c=k.cam;if(!c)return;const D=k.dxc||(k.dxc={h:k.h,pos:new V3(),look:new V3(),cl:0,y:k.y,fov:66,tr:0,orb:0,init:0,air:0}),sp=Math.abs(k.v),f=Math.min(1,sp/58),bst=k.boost>0;
+function camera(k,dt){const c=k.cam;if(!c)return;const D=k.dxc||(k.dxc={h:k.h,pos:new V3(),look:new V3(),cl:0,y:k.y,fov:66,tr:0,orb:0,init:0,air:0}),sp=Math.abs(k.v),f=Math.min(1,sp/(58*F)),bst=k.boost>0;
  /* tranco das batidas vira tremor suave (some rápido) */
  D.tr=Math.max(D.tr*Math.exp(-3.2*dt),Math.min(1,(k.shake||0)*.85));k.shake=0;
  const alvoH=k.dOn?k.mh+wrap(k.h-k.mh)*.35:k.h;D.h+=wrap(alvoH-D.h)*(1-Math.exp(-(k.dOn?3.4:5)*dt));k.camH=D.h;
@@ -109,7 +115,7 @@ function camera(k,dt){const c=k.cam;if(!c)return;const D=k.dxc||(k.dxc={h:k.h,po
  const cnt=state==='count'?clamp(stT/3.4,0,1):0,ci=cnt*cnt*(3-2*cnt);D.orb=damp(D.orb,k.fin?1:0,1.6,dt);
  const ang=D.h+ci*2.7+D.orb*(2.55+Math.sin(DX.t*.35)*.35),dist=lerp(lerp(15.5+f*3.5+(bst?2.5:0),10.5,ci),12.5,D.orb),alt=lerp(lerp(7.4+f*1.1,3.6,ci),4.6,D.orb);
  const sx=Math.sin(ang),sz=Math.cos(ang),rx=Math.cos(D.h),rz=-Math.sin(D.h),side=D.cl*3.2*(1-ci)*(1-D.orb);
- const chao=Math.max(0,k.gy>-1?k.gy:(D.lastG||0));if(k.gy>-1)D.lastG=k.gy;D.y=damp(D.y,chao+Math.max(0,k.y-chao)*.55,k.air?5:9,dt);
+ const okG=k.fallT<=0&&k.gy>k.y-30,chao=okG?k.gy:(D.lastG||0);if(okG)D.lastG=k.gy;D.y=damp(D.y,chao+Math.max(0,k.y-chao)*.55,k.air?5:9,dt);
  let tx=k.x-sx*dist-rx*side,tz=k.z-sz*dist-rz*side,ty=D.y+alt;
  const hb=window.PISTAS&&!ci&&!D.orb?PISTAS.hAt(k.fi-dist/SEG,0):-1e9;ty=Math.max(ty,hb+alt*.55,gAt(tx,tz)+2.6);
  _p.set(tx,ty,tz);if(!D.init){D.init=1;D.pos.copy(_p)}else{const a=1-Math.exp(-11*dt);D.pos.x+=(tx-D.pos.x)*a;D.pos.z+=(tz-D.pos.z)*a;D.pos.y+=(ty-D.pos.y)*(1-Math.exp(-7*dt))}
@@ -119,7 +125,7 @@ function camera(k,dt){const c=k.cam;if(!c)return;const D=k.dxc||(k.dxc={h:k.h,po
  const t=DX.t+k.i*7,q=D.tr*D.tr;c.rotateZ(D.cl*.045+nz(t,31)*q*.022);c.rotateX(nz(t,27)*q*.016);c.rotateY(nz(t,23)*q*.012);
  D.fov=damp(D.fov,Math.min(98,64+f*15+(bst?13:0)+D.air*4-ci*10-D.orb*14),bst?9:5,dt);k.fov=c.fov=D.fov;
  /* riscos de velocidade */
- const sk=k.dxStreak;if(sk){sk.position.copy(c.position);sk.quaternion.copy(c.quaternion);const o=clamp((sp-48)/34,0,.42)+(bst?.4:0);sk.material.opacity=damp(sk.material.opacity,DX.q>0?o:o*.5,6,dt);sk.visible=sk.material.opacity>.01;sk.userData.tex.offset.y-=dt*(1.5+f*2.5+(bst?2:0))}}
+ const sk=k.dxStreak;if(sk){sk.position.copy(c.position);sk.quaternion.copy(c.quaternion);const o=clamp((sp-62*F)/40,0,.12)+(bst?.14:0);sk.material.opacity=damp(sk.material.opacity,DX.q>0?o:o*.5,6,dt);sk.visible=sk.material.opacity>.01;sk.userData.tex.offset.y-=dt*(1.5+f*2.5+(bst?2:0))}}
 
 /* ---------- a cada quadro: vida dos karts, pilotos e câmera ---------- */
 const rs={mode:'race',steer:0,roll:0,acc:0,f:0,air:false,hit:0,boost:false,fin:0,bounce:0,drift:false,dt:0};
@@ -128,7 +134,7 @@ on('visuals',dt=>{if(dt<=0||!(state==='count'||state==='go'))return;
   /* inclinação nos morros sem tranco; o balanço do drift agora é da suspensão */
   const D=k.dx;D.rx=damp(D.rx==null?k.g.rotation.x:D.rx,k.g.rotation.x,k.air?8:14,dt);k.g.rotation.x=D.rx;if(k.dOn)k.g.rotation.z-=.08;
   DX.kartVis(k,dt);
-  if(DX.SH.on)k.sh.visible=false;
+  if(DX.SH.on)k.sh.visible=false;else if(k.fallT<=0&&!k.pit&&k.gy>k.y-30){k.sh.visible=true;k.sh.position.y=k.gy+.09}
   const rig=D.pil.userData.rig;rs.mode=state==='count'?'idle':'race';rs.steer=k.spin>0?0:(k.dOn?k.dDir*.9:(k.stS||0));rs.roll=D.roll;rs.acc=D.acc||0;rs.f=Math.min(1,Math.abs(k.v)/58);rs.air=k.air&&k.fallT<=0;
   rs.hit=Math.max(k.spin>0?1:0,D.hit,k.fallT>0?1:0);rs.boost=k.boost>0;rs.fin=k.fin?(k.place<=Math.max(1,Math.floor(karts.length/2))?1:9):0;rs.bounce=D.by;rs.drift=k.dOn;rs.dt=dt;DX.rigUpdate(rig,rs);
   if(k.cam&&k.human)camera(k,dt)}});

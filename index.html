@@ -4188,7 +4188,7 @@ const reto=(k,n)=>{const a0=TG[k.idx],a1=TG[(k.idx+n)%N],a2=TG[(k.idx+Math.floor
 const ameaca=k=>I2.rk.some(r=>r.tg===k&&Math.hypot(r.x-k.x,r.z-k.z)<90)||I2.sb.some(b=>!b.hit.has(k)&&b.own!==k&&ixd(Math.floor(k.fi),Math.floor(b.fi))*SEG<45&&Math.abs(b.lat-k.lat)<10);
 const moedasPerto=k=>{const P=ST.pv;if(!P)return 0;let n=0;for(const c of P.coins)if(c.cd<=0&&(c.x-k.x)**2+(c.z-k.z)**2<1600)n++;return n};
 function botItem2(k,dt){const it=k.item;if(!it||it==='roleta'){k.i2L=null;return false}if(k.fin||state!=='go'||k.fallT>0)return false;
- if(k.i2L!==it){k.i2L=it;k.i2H=0;k.i2W=.4+Math.random()*1.1}k.i2H+=dt;const H=k.i2H;
+ if(k.i2L!==it){k.i2L=it;k.i2Hold=0;k.i2W=.4+Math.random()*1.1}k.i2Hold+=dt;const H=k.i2Hold;
  if((it==='escudo'||it==='bolha'||it==='fantasma')&&ameaca(k))return true;if(H<k.i2W)return false;
  switch(it){case 'foguete':return aheadD(k)<N*.12||H>9;
   case 'espinho':return(aheadD(k)<N*.22&&reto(k,24))||H>10;
@@ -4265,8 +4265,10 @@ const CAT=[['palmeira1','Palmeira 1',18],['palmeira2','Palmeira 2',18],['palmeir
 const CATH={};CAT.forEach(c=>CATH[c[0]]=c);
 /* ---------- mudanças: ler / aplicar ---------- */
 const vazio=()=>({obj:{},add:[]});
-const efetivo=id=>ED.rasc[id]||ED.oficial[id]||null;
-const meu=id=>{if(!ED.rasc[id])ED.rasc[id]=JSON.parse(JSON.stringify(ED.oficial[id]||vazio()));const e=ED.rasc[id];e.obj=e.obj||{};e.add=e.add||[];return e};
+const efetivo=id=>[ED.rasc[id],ED.oficial[id]].find(E=>E&&(E.v||'')===((STAGES[id]&&STAGES[id].cenV)||''))||null;
+/* versão do cenário: quando um mapa é refeito (d.cenV muda), as edições antigas dele apontariam para outros objetos — então são ignoradas */
+const verOf=id=>(STAGES[id]&&STAGES[id].cenV)||'',valeV=(id,E)=>!!E&&(E.v||'')===verOf(id);
+const meu=id=>{if(!valeV(id,ED.rasc[id]))ED.rasc[id]=valeV(id,ED.oficial[id])?JSON.parse(JSON.stringify(ED.oficial[id])):vazio();const e=ED.rasc[id];if(verOf(id))e.v=verOf(id);e.obj=e.obj||{};e.add=e.add||[];return e};
 /* dá um nome fixo (cNN) aos objetos criados na montagem do mapa e junta as peças instanciadas que andam juntas (tronco + copa) */
 function marcar(w){if(w.userData.marc)return;w.userData.marc=1;let n=0,ant=null;w.children.forEach(c=>{if(c.userData.eid){ant=null;return}c.userData.eid='c'+(n++);
  if(c.isInstancedMesh){let junta=false;if(ant&&ant.count===c.count&&c.count>0){const a=new M4(),b=new M4();ant.getMatrixAt(0,a);c.getMatrixAt(0,b);const pa=new V3().setFromMatrixPosition(a),pb=new V3().setFromMatrixPosition(b);junta=Math.hypot(pa.x-pb.x,pa.z-pb.z)<4}
@@ -5124,7 +5126,7 @@ const gruda=i=>HAS3D&&GRU[tSamp(i)]===1;
 /* trilho 3D: a curva passa pelos pontos com altura; TG/RT continuam horizontais (todo o resto do jogo usa só x/z) */
 {const _st=setTrack;setTrack=function(d){if(!d.alt){_st(d);HAS3D=false;HT.fill(0);TB.fill(0);SL.fill(0);GRU.fill(0);return}
  W=d.W||68;const es=d.esc||ESC,hs=d.hts||[];curve=new THREE.CatmullRomCurve3(d.pts.map((a,i)=>new THREE.Vector3(a[0]*es,hs[i]||0,a[1]*es)),true,'catmullrom',.5);LEN=curve.getLength();SEG=LEN/N;
- SP.length=TG.length=RT.length=0;for(let i=0;i<N;i++){const p=curve.getPointAt(i/N),t=curve.getTangentAt(i/N),hl=Math.hypot(t.x,t.z)||1;SP.push(p);HT[i]=Math.max(0,p.y);SL[i]=t.y/hl;
+ SP.length=TG.length=RT.length=0;for(let i=0;i<N;i++){const p=curve.getPointAt(i/N),t=curve.getTangentAt(i/N),hl=Math.hypot(t.x,t.z)||1;SP.push(p);HT[i]=d.neg?p.y:Math.max(0,p.y);SL[i]=t.y/hl;
   const th=new THREE.Vector3(t.x/hl,0,t.z/hl);TG.push(th);RT.push(new THREE.Vector3(th.z,0,-th.x))}
  /* u de cada ponto de controle (para os trechos marcados) */
  const n=d.pts.length,ls=curve.getLengths(n*16),uk=k=>ls[Math.min(ls.length-1,k*16)]/ls[ls.length-1];d.uk=Array.from({length:n+1},(_,k)=>k===n?1:uk(k));
@@ -5775,10 +5777,12 @@ on('visuals',dt=>{for(const k of karts){if(k.trT===undefined)continue;k.trT+=dt;
 <script src="deluxe/dx-karts.js"></script>
 <script src="deluxe/dx-chars.js"></script>
 <script src="deluxe/dx-drive.js"></script>
+<script src="deluxe/dx-hud.js"></script>
 <script src="deluxe/dx-maps.js"></script>
 <script src="deluxe/dx-map-gelo.js"></script>
 <script src="deluxe/dx-map-candy.js"></script>
 <script src="deluxe/dx-map-pirata.js"></script>
+<script src="deluxe/dx-map-vulcao.js"></script>
 <script>
 if(window.PHONE)throw new Error('PHONEMODE');
 renderSel();refreshSel();selectStage(mapaAtual());srInit();

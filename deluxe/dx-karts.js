@@ -60,20 +60,21 @@ capivara(K,C){const Pc=P(C),Fu=Sf(0x9B6A43),Fd=Sf(0x7A5232),Mz=Sf(0xB98A58),Cg=M
   k.ball(.27,Fu,.98,2.32,1.5,[1,1.15,.5],[0,0,-.3]);k.ball(.16,Fd,.98,2.34,1.58,[1,1.1,.3],[0,0,-.3]);
   /* para-lamas */
   k.rbox(1.0,.16,2.1,.08,D2,1.62,1.82,1.85,[.06,0,0]);k.rbox(1.05,.16,2.2,.08,D2,1.66,1.92,-1.85,[-.05,0,0]);
-  /* gaiola */
-  k.tube([[1.2,1.9,.55],[1.15,3.2,.2],[1.1,4.15,-.5],[1.1,4.2,-1.9],[1.2,3.2,-2.3],[1.25,1.9,-2.4]],.1,Cg,false,26);
-  k.ball(.2,Gw(WARM),.6,4.42,-.35,[1,1,.6])});
- K.limb([-1.1,4.17,-.5],[1.1,4.17,-.5],.1,Cg);K.limb([-1.1,4.2,-1.9],[1.1,4.2,-1.9],.1,Cg);K.box(1.9,.2,.25,D2,0,4.38,-.42);
+  /* arco de proteção ATRÁS do piloto (nada passa pela cabeça) + barras baixas nas laterais */
+  k.tube([[1.3,1.95,-1.6],[1.32,4.6,-1.7],[1.05,5.55,-1.75],[.55,5.75,-1.75]],.11,Cg,false,16);
+  k.tube([[1.32,2.5,-1.6],[1.42,2.5,.4],[1.3,1.95,1.1]],.09,Cg,false,10);
+  k.ball(.2,Gw(WARM),.55,5.9,-1.62,[1,1,.6])});
+ K.limb([-.55,5.75,-1.75],[.55,5.75,-1.75],.11,Cg);K.limb([-1.3,4.4,-1.72],[1.3,4.4,-1.72],.08,Cg);K.box(1.5,.18,.22,D2,0,5.95,-1.75);
  /* para-choque tubular */
  K.tube([[-1.35,1.0,2.9],[-1.2,.85,3.45],[1.2,.85,3.45],[1.35,1.0,2.9]],.11,Mt(0xC9CFDA),false,18);
  /* snorkel */
  K.tube([[1.3,1.6,1.2],[1.5,2.4,1.1],[1.42,3.6,.6]],.13,DK,false,12);K.cyl(.2,.2,.3,DK,1.42,3.72,.6);
- const r=K.sub('rack',0,4.35,-1.2);r.rbox(1.2,.5,.85,.14,P(0xD9423A),-.35,.3,.1);r.box(1.24,.06,.1,Sf(0x7A4A22),-.35,.36,.1);r.cyl(.26,.26,1.5,Sf(0x3FA36A),.5,.3,-.1,[PI/2,0,.2]);
+ const r=K.sub('rack',0,1.9,-2.15);r.rbox(1.2,.5,.85,.14,P(0xD9423A),-.35,.3,.1);r.box(1.24,.06,.1,Sf(0x7A4A22),-.35,.36,.1);r.cyl(.26,.26,1.5,Sf(0x3FA36A),.5,.3,-.1,[PI/2,0,.2]);
  r.ball(.36,Sf(0x3E9E4A),-.2,.86,.05);r.tor(.36,.03,Sf(0x1F6A34),-.2,.86,.05,[PI/2,0,0]);r.tor(.3,.03,Sf(0x1F6A34),-.2,.86,.05,[PI/2,0,.9]);
- const sp=K.sub('spare',0,1.9,-2.72);sp.lathe([[.38,-.2],[.62,-.2],[.72,-.1],[.72,.1],[.62,.2],[.38,.2]],TIRE,0,0,0,[PI/2,0,0]);sp.cyl(.4,.4,.3,P(C),0,0,0,[PI/2,0,0]);
+ const sp=K.sub('spare',0,1.35,-2.72);sp.lathe([[.38,-.2],[.62,-.2],[.72,-.1],[.72,.1],[.62,.2],[.38,.2]],TIRE,0,0,0,[PI/2,0,0]);sp.cyl(.4,.4,.3,P(C),0,0,0,[PI/2,0,0]);
  const a=K.sub('ant',-1.2,2.0,-2.3);a.limb([0,0,0],[0,2.9,0],.035,DK);a.ext([[0,0],[.95,.25],[0,.5]],.03,P(C),0,2.4,0,[0,PI/2,0]);a.ball(.09,Gw(RED),0,2.98,0);
  return{w:[[1.62,.88,1.85,.88,.78],[1.66,.95,-1.85,.95,.9]],rim:C,wo:{knob:1},seat:[0,1.62,-.7],fl:[[.7,1.0,-2.95,.34]],num:[[1.39,1.5,-.8,.7]],
-  anim(p,s){p.rack.rotation.z=s.sway*.5;p.rack.rotation.x=s.pitch*.6;p.rack.position.y=4.35+s.bounce*.5;p.spare.rotation.z=s.sway*.8;p.spare.position.y=1.9+s.bounce*.3;
+  anim(p,s){p.rack.rotation.z=s.sway*.5;p.rack.rotation.x=s.pitch*.6;p.rack.position.y=1.9+s.bounce*.5;p.spare.rotation.z=s.sway*.8;p.spare.position.y=1.35+s.bounce*.3;
    p.ant.rotation.z=s.sway*2.2+Math.sin(s.t*9)*.03*s.f;p.ant.rotation.x=-s.f*.28+s.pitch*2}}},
 
 fantasma(K,C){const Pc=P(C),Sh=Sf(0xF4FAFF),Sd=Sf(0xD5E6F7),Ey=0x151022,Cy=Gw(0x7CF7FF);

@@ -115,7 +115,12 @@ scene.add(sun.target);sun.shadow.mapSize.set(SH.size,SH.size);sun.shadow.bias=-.
 const _f=new V3(),_c=new V3(),_vp=new THREE.Vector4();
 DX.setShadows=on=>{on=!!on&&DX.q>0;if(SH.on===on)return;SH.on=on;sun.castShadow=on};
 DX.setShadowSize=s=>{if(SH.size===s)return;SH.size=s;sun.shadow.mapSize.set(s,s);if(sun.shadow.map){sun.shadow.map.dispose();sun.shadow.map=null}};
+/* ganchos por câmera (ex.: neblina azul debaixo d'água); o que mudarem é desfeito depois do desenho */
+DX.camHooks=[];const CS={fog:new COL(),bg:new COL(),n:0,f:0,sky:false,on:false};
+scene.onAfterRender=()=>{if(!CS.on)return;CS.on=false;scene.fog.color.copy(CS.fog);scene.fog.near=CS.n;scene.fog.far=CS.f;scene.background.copy(CS.bg);sky.visible=CS.sky};
+DX.camSave=()=>{if(CS.on)return;CS.on=true;CS.fog.copy(scene.fog.color);CS.n=scene.fog.near;CS.f=scene.fog.far;CS.bg.copy(scene.background);CS.sky=sky.visible};
 scene.onBeforeRender=(r,s,cam)=>{
+ for(const h of DX.camHooks)h(cam);
  r.getCurrentViewport(_vp);const hpx=_vp.w;FXU.uH.value=hpx*cam.projectionMatrix.elements[5]*.5;
  if(!SH.on)return;cam.getWorldDirection(_f);_f.y=0;const L=_f.length();if(L>1e-3)_f.multiplyScalar(1/L);
  const far=cam===menuCam?0:34;_c.copy(cam.position).addScaledVector(_f,far);_c.y=Math.max(0,cam.position.y-12);
@@ -143,7 +148,7 @@ const skyM=new THREE.ShaderMaterial({uniforms:skyU,side:THREE.BackSide,depthWrit
   if(cloud>0.&&y>-.02){vec2 q=v.xz/(y+.18)*1.15+vec2(t*.008,t*.004);float w=fbm(q*1.4);float m=smoothstep(1.-cloud*.62,1.-cloud*.62+.22,w)*smoothstep(-.02,.12,y);
    vec3 cc=mix(cloudC*.72,cloudC,smoothstep(.45,.9,fbm(q*2.6+3.)))+sunC*pow(sd,6.)*.25;c=mix(c,cc,m*.92);}
   gl_FragColor=vec4(c,1.);}`});
-const sky=new THREE.Mesh(new THREE.SphereGeometry(1,32,20),skyM);sky.frustumCulled=false;sky.renderOrder=-1000;sky.visible=false;scene.add(sky);
+const sky=new THREE.Mesh(new THREE.SphereGeometry(1,32,20),skyM);sky.frustumCulled=false;sky.renderOrder=-1000;sky.visible=false;scene.add(sky);DX.skyMesh=sky;
 DX.sky=o=>{sky.visible=!!o;if(!o)return;const s=(k,v)=>{if(v!=null)skyU[k].value.copy(lin(v))};s('top',o.top);s('mid',o.mid);s('hor',o.hor);s('sunC',o.sunC);s('cloudC',o.cloudC||0xFFFFFF);
  if(o.sunD)skyU.sunD.value.set(o.sunD[0],o.sunD[1],o.sunD[2]).normalize();skyU.cloud.value=o.cloud==null?.5:o.cloud;skyU.stars.value=o.stars||0;skyU.aur.value=o.aur||0};
 
@@ -181,10 +186,10 @@ DX.skid=(x,y,z,h,w,len,pitch)=>{_o.position.set(x,y+.07,z);_o.rotation.set(pitch
 DX.clearSkids=()=>{_o.scale.set(0,0,0);_o.updateMatrix();for(let i=0;i<SKN;i++)skid.setMatrixAt(i,_o.matrix);skid.instanceMatrix.needsUpdate=true};
 
 /* ---------- riscos de velocidade: um túnel de riscos em volta de cada câmera (cada jogador só vê o seu) ---------- */
-const stT=new THREE.CanvasTexture(cv(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);for(let i=0;i<46;i++){const x=Math.random()*w,y=Math.random()*h,L=40+Math.random()*120,gr=g.createLinearGradient(0,y,0,y+L);
- gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.5,'rgba(255,255,255,'+(.25+Math.random()*.6)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(x,y,1.2+Math.random()*1.6,L);g.fillRect(x,y-h,1.6,L)}}));
+const stT=new THREE.CanvasTexture(cv(256,256,(g,w,h)=>{g.clearRect(0,0,w,h);for(let i=0;i<22;i++){const x=Math.random()*w,y=Math.random()*h,L=40+Math.random()*120,gr=g.createLinearGradient(0,y,0,y+L);
+ gr.addColorStop(0,'rgba(255,255,255,0)');gr.addColorStop(.5,'rgba(255,255,255,'+(.2+Math.random()*.35)+')');gr.addColorStop(1,'rgba(255,255,255,0)');g.fillStyle=gr;g.fillRect(x,y,.8+Math.random()*.8,L);g.fillRect(x,y-h,1,L)}}));
 stT.wrapS=stT.wrapT=THREE.RepeatWrapping;
-DX.streak=layer=>{const t=stT.clone();t.needsUpdate=true;t.repeat.set(3,1);const g=new THREE.CylinderGeometry(3.2,7.5,46,20,1,true);g.rotateX(Math.PI/2);
+DX.streak=layer=>{const t=stT.clone();t.needsUpdate=true;t.repeat.set(3,1);const g=new THREE.CylinderGeometry(5.5,8,40,20,1,true);g.rotateX(Math.PI/2);
  const m=new THREE.Mesh(g,new THREE.MeshBasicMaterial({map:t,transparent:true,opacity:0,blending:THREE.AdditiveBlending,depthWrite:false,side:THREE.BackSide,fog:false}));m.frustumCulled=false;m.renderOrder=7;m.layers.set(layer);m.userData.tex=t;return m};
 
 /* ---------- qualidade automática ---------- */
