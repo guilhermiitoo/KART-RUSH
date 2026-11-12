@@ -57,7 +57,7 @@ function tools(d){const X=d.dx,hw=W/2,T=X.T,o3=new THREE.Object3D();
   /* fileira ao longo da pista: de u0 a u1, a cada 'passo' metros, deslocada 'lat' */
   along(u0,u1,passo,lat,fn){const out=[];for(let u=u0;u<u1;u+=passo/LEN){const p=B.at(u,lat);if(!fn||fn(p,u))out.push({x:p.x,y:p.y,z:p.z,s:1,r:p.h})}return out},
   /* o lugar mais livre perto do meio do mapa (para as atrações centrais) */
-  centro(rad){let cx=0,cz=0;SP.forEach(p=>{cx+=p.x/N;cz+=p.z/N});let best=null;for(let gx=-10;gx<=10;gx++)for(let gz=-10;gz<=10;gz++){const x=cx+gx*(T.x1-T.x0)/26,z=cz+gz*(T.z1-T.z0)/26,dd=T.dist(x,z),sc=Math.min(dd,rad*1.6)-.15*Math.hypot(x-cx,z-cz);if(!best||sc>best.sc)best={x,z,sc,dd,y:T.ground(x,z)}}return best},
+  centro(rad){let cx=0,cz=0;SP.forEach(p=>{cx+=p.x/N;cz+=p.z/N});let best=null;for(let gx=-10;gx<=10;gx++)for(let gz=-10;gz<=10;gz++){const x=cx+gx*(T.x1-T.x0)/26,z=cz+gz*(T.z1-T.z0)/26,dd=T.dist(x,z),sc=Math.min(dd,rad*1.6)-.15*Math.hypot(x-cx,z-cz);if(!best||sc>best.sc)best={x,z,sc,dd,y:T.ground(x,z)}}d.dx.miolo=best;return best},
   /* espalha um modelo (kit) em vários lugares com 1 desenho por material */
   inst(K,pts,op){op=op||{};const out=[];if(!pts.length)return out;for(const b in K.node.bk){const m=new THREE.InstancedMesh(DX.bake(K.node.bk[b]),op.mat||DX.mats[b]||DX.mats.flat,pts.length);
    pts.forEach((p,i)=>{o3.position.set(p.x,p.y+(op.dy||0),p.z);o3.rotation.set(op.tilt?(Math.random()-.5)*op.tilt:0,p.r||0,op.tilt?(Math.random()-.5)*op.tilt:0);o3.scale.setScalar(p.s||1);o3.updateMatrix();m.setMatrixAt(i,o3.matrix)});

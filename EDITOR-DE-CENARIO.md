@@ -29,6 +29,8 @@
 
 **O que o editor não mexe:** a pista, as caixas "?" e as moedas.
 
-**Bichos e perigos que se mexem sozinhos** (jacarés, balas de goma, tentáculo, tucanos) voltam para o lugar deles, porque o jogo os move a cada momento.
+**Bichos e perigos que se mexem sozinhos** (tentáculos, peixes, tubarão, pinguins, fantasmas, mãos da lava, morcegos) voltam para o lugar deles, porque o jogo os move a cada momento.
 
 **Os modelos piratas** só aparecem pelo site (Netlify). Abrindo o `index.html` direto do computador, eles não carregam.
+
+**Quando um mapa é refeito:** cada mapa tem uma *versão do cenário*. Se um mapa for reconstruído no código, as mudanças antigas dele deixam de valer, porque apontariam para outros objetos. Elas são ignoradas, e o mapa aparece como o original novo. Os outros mapas não são afetados. Na versão Deluxe, as pistas Pico Gelado, Reino Doce e Baía do Kraken já foram refeitas; as mudanças feitas antes disso nesses mapas precisam ser refeitas no editor.

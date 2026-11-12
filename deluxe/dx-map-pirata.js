@@ -109,7 +109,7 @@ DX.addMap({id:'pirata',nome:'BAÍA DO KRAKEN',ico:'🏴‍☠️',tema:'pirata',
     DX.fall(B,{n:600,box:80,col:0xE8FFFF,vy:5,size:.4,maxY:-.4});
     /* algas e corais no fundo */
     {const A=DX.kit();A.tube([[0,0,0],[.8,4,0],[-.6,8,.3],[.7,12,0],[0,15,-.3]],.45,0x2E9A5A,false,14);A.tube([[1.2,0,.4],[2.2,4,.6],[1,8,1],[2,10,.4]],.35,0x3FBF6A,false,10);
-     B.inst(A,B.scatter(140,(x,z,h,dd)=>h<-8&&dd>hw+10?.7+Math.random()*.8:0,[T.x0+200,T.x1-200,T.z0+200,T.z1-200]),{cast:false})}
+     B.inst(A,B.scatter(140,(x,z,h,dd)=>h<-11&&dd>hw+10?Math.min(.75,(-h-3)/16)*(.7+Math.random()*.3):0,[T.x0+200,T.x1-200,T.z0+200,T.z1-200]),{cast:false})}
     [0xFF6F8A,0xFFB020,0xB46BFF,0x4FC8FF].forEach(c=>{const C=DX.kit();C.def='flat';C.ico(1.6,c,0,1,0,[1,1.4,1]);C.ico(1.1,c,1.3,.8,.4);C.cone(.5,3,c,-1,1.5,.4,[0,0,.4],null,5);C.cone(.4,2.4,c,.4,1.8,-.9,[.3,0,0],null,5);
      B.inst(C,B.scatter(40,(x,z,h,dd)=>h<-8&&dd>hw+7?.8+Math.random()*1.4:0,[T.x0+200,T.x1-200,T.z0+200,T.z1-200]),{cast:false})});
     /* cardumes nadando em volta do túnel */

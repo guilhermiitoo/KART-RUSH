@@ -19,22 +19,22 @@ on('build',(dd,w)=>{if(dd!==d)return;X.anim=[];X.knock=[];const hw=W/2;
 
  /* ---------- DEMÔNIO GIGANTE no meio do mapa ---------- */
  {const cx=(x0+x1)/2,cz=(z0+z1)/2;let best=null;for(let gx=-8;gx<=8;gx++)for(let gz=-8;gz<=8;gz++){const x=cx+gx*(x1-x0)/18,z=cz+gz*(z1-z0)/18,dd=near(x,z).d,sc=dd-.25*Math.hypot(x-cx,z-cz);if(!best||sc>best.sc)best={x,z,sc,dd}}
-  const S=clamp((best.dd-30)/62,.55,1.25),K=DX.kit(),Rd=Fl(0x4A0E0C),Dk=Fl(0x1A0606),Hn=Fl(0x2A1A16),Ey=Gw(0xFFB020);K.def='flat';
+  const S=clamp((best.dd-30)/62,.55,1.25),K=DX.kit(),Rd=Fl(0x4A0E0C),Dk=Fl(0x1A0606),Hn=Fl(0x2A1A16),Ey=Gw(0xFF2A10);K.def='flat';
   /* ombros e garras agarrando a beira da lava */
   K.ico(26,Rd,-34,4,6,[1,.7,.9],null,1);K.ico(26,Rd,34,4,6,[1,.7,.9],null,1);
   for(const s of[-1,1]){K.ico(9,Rd,s*40,1,32,[1.3,.5,1.2],null,1);for(let f=0;f<4;f++)K.cone(2.2,10,Hn,s*(32+f*5.5),2,40+Math.abs(f-1.5)*1.5,[PI/2+.5,0,0],null,5)}
   const H=K.sub('head',0,30,0);H.ico(24,Rd,0,12,0,[1,1.05,.95],null,2);H.ico(10,Rd,0,4,18,[1.6,.5,.7],null,1);
   /* chifres curvos (segmentos), olhos acesos, nariz e sobrancelha */
   for(const s of[-1,1]){let x=s*15,y=26,z=-2,r=5.5;for(let k=0;k<6;k++){const nx=x+s*(5-k*.3),ny=y+5+k*1.5,nz=z-1.5;H.limb([x,y,z],[nx,ny,nz],r,Hn);x=nx;y=ny;z=nz;r*=.78}H.cone(r*1.3,7,Hn,x+s*1,y+3,z,[0,0,-s*.4],null,6);
-   H.ball(5.5,Dk,s*9,13,19,[1.2,.9,.6]);H.ball(3,Ey,s*9,13,21.5,[1.2,.9,.6]);H.lowball(9,Ha(0xFF7A1A),s*9,13,22);H.rbox(12,3,5,1.2,Rd,s*8.5,18.5,18,[.3,0,s*-.35])}
+   H.ball(5.5,Dk,s*9,13,19,[1.2,.9,.6]);H.ball(3,Ey,s*9,13,21.5,[1.2,.9,.6]);H.lowball(9,Ha(0xFF2A10),s*9,13,22);H.rbox(14,3.6,6,1.2,Dk,s*8,17.6,18.6,[.3,0,s*.5])}
   H.cone(2.5,5,Dk,-1.6,7,22,[-.5,0,.3],null,4);H.cone(2.5,5,Dk,1.6,7,22,[-.5,0,-.3],null,4);
   for(let t=0;t<8;t++)H.cone(1.6,5,Fl(0xF2E8D0),-9.8+t*2.8,1.6,20.5-Math.abs(t-3.5)*.6,[PI,0,0],null,4);
   const J=H.sub('jaw',0,1,4);J.ico(14,Rd,0,-5,8,[1.25,.55,1.1],null,1);J.ball(9,Gw(0xFF5A1A),0,-2,10,[1.2,.4,1]);for(let t=0;t<7;t++)J.cone(1.5,4.6,Fl(0xF2E8D0),-8.4+t*2.8,-.5,19-Math.abs(t-3)*.8,null,null,4);
-  const g=B.put(K,best.x,-14,best.z,0,S),q=g.userData.parts;let fogo=6,abre=0;
+  const g=B.put(K,best.x,-3,best.z,0,S),q=g.userData.parts;X.miolo={x:best.x,y:20,z:best.z};let fogo=6,abre=0;
   X.anim.push((t,dt)=>{/* olha para o kart humano mais perto */let tg=null,bd=1e18;for(const k of (typeof humans!=='undefined'&&humans.length?humans:karts)){const dq=(k.x-g.position.x)**2+(k.z-g.position.z)**2;if(dq<bd){bd=dq;tg=k}}
    if(tg){const a=Math.atan2(tg.x-g.position.x,tg.z-g.position.z);q.head.rotation.y+=wrap(a-q.head.rotation.y)*(1-Math.exp(-1.2*dt))}
    q.head.rotation.x=Math.sin(t*.7)*.04;q.head.position.y=30+Math.sin(t*.9)*1.2;
-   fogo-=dt;if(fogo<0){abre=Math.min(1,abre+dt*2.5);if(fogo<-2.2){fogo=5+Math.random()*4}}else abre=Math.max(0,abre-dt*1.5);q.jaw.rotation.x=abre*.55+Math.sin(t*3)*.03;
+   fogo-=dt;if(fogo<0){abre=Math.min(1,abre+dt*2.5);if(fogo<-2.2){fogo=5+Math.random()*4}}else abre=Math.max(0,abre-dt*1.5);q.jaw.rotation.x=.22+abre*.45+Math.sin(t*3)*.04;
    if(abre>.6&&state!=='menu'){q.jaw.updateWorldMatrix(true,false);const p=new THREE.Vector3(0,-1,22).applyMatrix4(q.jaw.matrixWorld),dir=new THREE.Vector3(0,-.3,1).transformDirection(q.head.matrixWorld);
     for(let n=0;n<6;n++)DX.spark({x:p.x,y:p.y,z:p.z,vx:dir.x*48+(Math.random()-.5)*10,vy:dir.y*48+(Math.random()-.2)*10,vz:dir.z*48+(Math.random()-.5)*10,life:.9,s0:5*S,s1:1,col:n%2?0xFF7A1A:0xFFD43B,g:-4,d:.8})}})}
 
