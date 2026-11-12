@@ -2945,7 +2945,7 @@ function finish(){state='end';$('top').style.display='none';$('mini').style.disp
   $('winner').textContent=last?'🏆 CAMPEÃO: '+tt[0].n:ST.ico+' '+ST.nome+' · VENCEDOR: '+rank[0].name;$('endsub').textContent=last?'CLASSIFICAÇÃO FINAL DO CAMPEONATO':'CORRIDA '+(CH.i+1)+' DE '+CAMP.length+' · PONTOS SOMADOS';
   $('tbl').innerHTML='<tr><th>#</th><th>PILOTO</th><th>NESTA CORRIDA</th><th>PONTOS</th></tr>'+tt.map((t,i)=>{const k=rank.find(x=>x.i===t.ci);return`<tr><td>${i+1}</td><td style="color:${hexc(t.ci)}">${t.n}</td><td>${k?placeOf(k)+'º · +'+t.last:'—'}</td><td>${t.p}</td></tr>`}).join('');
   $('endgo').textContent=last?'ENTER / A PARA JOGAR DE NOVO':'ENTER / A → '+next.toUpperCase()}
- else{$('winner').textContent='VENCEDOR: '+rank[0].name;$('endsub').textContent=ST.ico+' FASE DO '+ST.nome+' · RESULTADO';
+ else{$('winner').textContent='VENCEDOR: '+rank[0].name;$('endsub').textContent=ST.ico+' '+ST.nome+' · RESULTADO';
   $('tbl').innerHTML='<tr><th>#</th><th>PILOTO</th><th>CHEGADA</th><th>VOLTAS</th></tr>'+rank.map((k,i)=>`<tr><td>${i+1}</td><td style="color:${hexc(k.i)}">${k.name}</td><td>${k.fin?k.place+'º':'—'}</td><td>${Math.min(LAPS,Math.max(0,Math.floor(k.prog/N)))}/${LAPS}</td></tr>`).join('');
   $('endgo').textContent='ENTER / A PARA JOGAR DE NOVO'}
  $('sEnd').classList.add('on');if(mode==='online')karts.forEach(k=>{if(k.pl)tx(k.pl,{t:'end',place:rank.indexOf(k)+1,win:rank[0].name,next})});
@@ -5262,7 +5262,7 @@ const _cc=cenarioComum;cenarioComum=function(d){if(!d.alt)return _cc(d);const hw
  {const p=ptAt(0),t=new THREE.CanvasTexture(cv(256,32,g=>{for(let x=0;x<16;x++)for(let y=0;y<2;y++){g.fillStyle=(x+y)%2?'#1F4E5F':'#fff';g.fillRect(x*16,y*16,16,16)}}));
   const m=new THREE.Mesh(new THREE.PlaneGeometry(W,3),new THREE.MeshBasicMaterial({map:t}));const g=new THREE.Group();g.position.set(p.x,p.y+.09,p.z);g.rotation.y=p.h;m.rotation.x=-Math.PI/2;g.add(m);world.add(g)}
  {const p=ptAt(.012),g=new THREE.Group();g.position.set(p.x,p.y,p.z);g.rotation.y=p.h;[-1,1].forEach(s=>{const pl=B(1.4,14,1.4,0x2A1A55);pl.position.set(s*(hw+2),7,0);g.add(pl)});
-  const bm=B(W+6,4.4,1.4,0x2A1A55);bm.position.y=13.4;g.add(bm);const t=labelTex('LARGADA · '+d.nome,'#FF6B22','Pista desenhada');t.encoding=THREE.sRGBEncoding;
+  const bm=B(W+6,4.4,1.4,0x2A1A55);bm.position.y=13.4;g.add(bm);const t=labelTex('LARGADA · '+d.nome,'#FF6B22',d.dx&&d.dx.def?(d.arches[0]&&d.arches[0][3])||'Boa corrida!':'Pista desenhada');t.encoding=THREE.sRGBEncoding;
   [0,Math.PI].forEach(r=>{const pl=new THREE.Mesh(new THREE.PlaneGeometry(W+5,4),new THREE.MeshBasicMaterial({map:t,fog:false}));pl.position.set(0,13.4,r?-.75:.75);pl.rotation.y=r;g.add(pl)});world.add(g)}
  (d.arches||[]).slice(1).forEach(a=>{const p=ptAt(a[0]),g=new THREE.Group();g.position.set(p.x,p.y,p.z);g.rotation.y=p.h;[-1,1].forEach(s=>{const pl=B(1.2,13,1.2,0x9DB0B9);pl.position.set(s*(hw+1.6),6.5,0);g.add(pl)});
   const bm=B(W+5,4.2,1.2,0xFFFFFF);bm.position.y=12.4;g.add(bm);const t=labelTex(a[1],a[2],a[3]);t.encoding=THREE.sRGBEncoding;[0,Math.PI].forEach(r=>{const pl=new THREE.Mesh(new THREE.PlaneGeometry(W+4.6,3.8),new THREE.MeshBasicMaterial({map:t,fog:false}));pl.position.set(0,12.4,r?-.65:.65);pl.rotation.y=r;g.add(pl)});world.add(g)});

@@ -24,13 +24,13 @@ DX.addMap({id:'candy',nome:'REINO DOCE',ico:'🍭',tema:'candy',dif:3,espH:30,es
   DX.sea(B,-.6,choc(),'choc');
   DX.fall(B,{n:700,box:120,col:0xFFFFFF,vy:-3,vx:1,size:.26});
   /* pirulitos (cabo + disco com espiral) */
-  const lol=c=>{const K=DX.kit();K.def='flat';K.cyl(.3,.34,9,0xFFFFFF,0,4.5,0,null,null,6);K.cyl(3,3,.8,P(c),0,10.5,0,[PI/2,0,0],null,16);for(let i=0;i<5;i++)K.tor(.5+i*.55,.14,P(0xFFFFFF),0,10.5,.42,null,PI*1.2,null,10);for(let i=0;i<5;i++)K.tor(.5+i*.55,.14,P(0xFFFFFF),0,10.5,-.42,[0,PI,0],PI*1.2,null,10);return K};
+  const lol=c=>{const K=DX.kit();K.def='flat';K.cyl(.3,.34,9,0xFFFFFF,0,4.5,0,null,null,6);K.cyl(3,3,.8,P(c),0,10.5,0,[PI/2,0,0],null,16);for(const z of[.42,-.42])for(let i=0;i<3;i++)K.tor(.7+i*.8,.2,P(0xFFFFFF),0,10.5,z,[0,z<0?PI:0,i],PI*1.3,null,8);return K};
   CORES.slice(0,4).forEach((c,i)=>B.inst(lol(c),B.scatter(34,(x,z,h,dd)=>dd>hw+10&&dd<330&&h>0&&h<60?.8+Math.random()*.9:0)));
   /* jujubas, cupcakes e bengalas doces */
-  CORES.forEach(c=>{const K=DX.kit();K.half(2.2,P(c),0,0,0,[1,1.15,1]);K.cyl(2.2,2.3,.3,P(c),0,.15,0);B.inst(K,B.scatter(22,(x,z,h,dd)=>dd>hw+7&&dd<200&&h>0?.5+Math.random()*1.3:0))});
-  {const K=DX.kit();K.def='flat';K.cyl(3,2.2,3,0xE8B878,0,1.5,0,null,null,10);K.ball(3.3,P(PINK),0,3.6,0,[1,.6,1]);K.ball(2.4,P(CREAM),0,5,0,[1,.6,1]);K.ball(1.4,P(PINK),0,6.2,0,[1,.7,1]);K.ball(.7,P(0xE8202A),0,7.3,0);B.inst(K,B.scatter(26,(x,z,h,dd)=>dd>hw+12&&dd<280&&h>0?.9+Math.random()*1.4:0))}
-  {const K=DX.kit();const pts=[];for(let i=0;i<=10;i++){const a=i/10;pts.push(a<.6?[0,a/.6*8,0]:[Math.sin((a-.6)/.4*PI)*1.6-0,8+Math.sin((a-.6)/.4*PI/1)*1.2,0])}
-   K.tube([[0,0,0],[0,5,0],[0,8.5,0],[.8,10.2,0],[2.4,10.6,0],[3.6,9.6,0]],.5,P(0xFFFFFF),false,24);for(let i=0;i<9;i++)K.tor(.52,.12,P(0xE8202A),0,.6+i*.95,0,[PI/2+.5,0,0],0,null,8);
+  CORES.forEach(c=>{const K=DX.kit();K.lowball(2.2,P(c),0,.2,0,[1,1.1,1]);B.inst(K,B.scatter(22,(x,z,h,dd)=>dd>hw+7&&dd<200&&h>0?.5+Math.random()*1.3:0))});
+  {const K=DX.kit();K.def='flat';K.cyl(3,2.2,3,0xE8B878,0,1.5,0,null,null,10);K.lowball(3.3,P(PINK),0,3.6,0,[1,.6,1]);K.lowball(2.4,P(CREAM),0,5,0,[1,.6,1]);K.lowball(1.4,P(PINK),0,6.2,0,[1,.7,1]);K.lowball(.7,P(0xE8202A),0,7.3,0);B.inst(K,B.scatter(26,(x,z,h,dd)=>dd>hw+12&&dd<280&&h>0?.9+Math.random()*1.4:0))}
+  {const K=DX.kit();
+   K.tube([[0,0,0],[0,5,0],[0,8.5,0],[.8,10.2,0],[2.4,10.6,0],[3.6,9.6,0]],.5,P(0xFFFFFF),false,12);for(let i=0;i<6;i++)K.cyl(.53,.53,.5,P(0xE8202A),0,.8+i*1.4,0,null,null,6);
    B.inst(K,B.scatter(40,(x,z,h,dd)=>dd>hw+6&&dd<120&&h>0?.7+Math.random()*.6:0))}
   /* postes: bengala com bola de chiclete acesa */
   {const K=DX.kit();K.def='flat';K.cyl(.25,.3,7,0xFFFFFF,0,3.5,0,null,null,6);for(let i=0;i<6;i++)K.cyl(.27,.27,.4,0xFF4D6D,0,.8+i*1.1,0,null,null,6);K.ball(.9,Gw(0xFFE08A),0,7.6,0);K.lowball(2.6,Ha(0xFF9AD8),0,7.6,0);
@@ -38,7 +38,7 @@ DX.addMap({id:'candy',nome:'REINO DOCE',ico:'🍭',tema:'candy',dif:3,espH:30,es
   /* BOLO GIGANTE no meio da espiral */
   {const e=(d.esp||[])[0];if(e){let cx=0,cz=0,n=0,ymin=1e9;for(let i=Math.round(e[0]*N);i<=Math.round(e[1]*N);i++){const j=((i%N)+N)%N;cx+=SP[j].x;cz+=SP[j].z;n++;ymin=Math.min(ymin,PISTAS.HT[j])}cx/=n;cz/=n;
     const K=DX.kit(),R0=30;[[R0,20,0xE8B070,PINK],[R0*.78,17,0xD89A5A,CREAM],[R0*.56,15,0xE8B070,MINT]].reduce((y,a,i)=>{K.cyl(a[0],a[0],a[1],Fl(a[2]),0,y+a[1]/2,0,null,null,22);K.cyl(a[0]+.6,a[0]+.6,2.4,P(a[3]),0,y+a[1]-.6,0,null,null,22);
-      for(let k=0;k<16;k++){const an=k/16*PI*2;K.ball(1.9,P(a[3]),Math.cos(an)*(a[0]+.5),y+a[1]-2.4-(k%3)*1.6,Math.sin(an)*(a[0]+.5),[1,1.5+(k%3)*.5,1]);if(i<2)K.ball(1.5,P(0xFFFFFF),Math.cos(an+.2)*(a[0]-1.6),y+a[1]+1,Math.sin(an+.2)*(a[0]-1.6))}return y+a[1]},0);
+      for(let k=0;k<16;k++){const an=k/16*PI*2;K.lowball(1.9,P(a[3]),Math.cos(an)*(a[0]+.5),y+a[1]-2.4-(k%3)*1.6,Math.sin(an)*(a[0]+.5),[1,1.5+(k%3)*.5,1]);if(i<2)K.lowball(1.5,P(0xFFFFFF),Math.cos(an+.2)*(a[0]-1.6),y+a[1]+1,Math.sin(an+.2)*(a[0]-1.6))}return y+a[1]},0);
     for(let k=0;k<6;k++){const an=k/6*PI*2,x=Math.cos(an)*9,z=Math.sin(an)*9;K.cyl(.7,.7,9,P(CORES[k]),x,56.5,z,null,null,8);K.cone(.9,2.6,Gw(0xFFD43B),x,62.4,z,null,null,6);K.lowball(3,Ha(0xFFB020),x,62.4,z)}
     K.ball(3.4,P(0xE8202A),0,55.4,0);K.limb([0,58,0],[1.5,62,0],.25,Fl(0x3FA34D));const g=B.put(K,cx,ymin-1,cz,0)}}
   /* arcos de donut por cima da pista */
