@@ -4766,7 +4766,7 @@ const TV=document.createElement('div');TV.id='rmTv';document.body.appendChild(TV
 const kb=(k,p)=>{const pa=p&&{A:'a',B:'b',X:'x',Y:'y'}[k];return pa?`<kbd class="pa ${pa}">${k}</kbd>`:/^(LB|RB|SELECT|START|✚)$/.test(k)?`<kbd class="pd">${k}</kbd>`:`<kbd>${k}</kbd>`};
 const keyRow=L=>L.filter(x=>RM.pad>0?x.pad!==null:true).map(x=>`<span class="k${x.off?' off':''}${x.ed?' ed':''}">${(RM.pad>0&&x.pad?x.pad.map(k=>kb(k,1)):x.kb.map(k=>kb(k))).join('')}${x.t}</span>`).join('');
 function hints(force){const n=pads().length;if(!force&&n===RM.pad)return;RM.pad=n;const mus={kb:['M'],pad:['SELECT'],t:RM.snd?'MÚSICA LIGADA':'MÚSICA DESLIGADA',off:!RM.snd};
- $('rmKH').innerHTML=keyRow([{kb:['↑','↓'],pad:['✚'],t:'ESCOLHER'},{kb:['ENTER'],pad:['A'],t:'CONFIRMAR'},{kb:['H'],pad:['Y'],t:'COMO JOGAR'},mus,{kb:['F2'],pad:null,t:'EDITOR DE CENÁRIO',ed:1},{kb:['F3'],pad:null,t:'EDITOR DE PISTA',ed:2}])+
+ $('rmKH').innerHTML=keyRow([{kb:['←','→'],pad:['✚'],t:'ESCOLHER'},{kb:['ENTER'],pad:['A'],t:'CONFIRMAR'},{kb:['H'],pad:['Y'],t:'COMO JOGAR'},mus,{kb:['F2'],pad:null,t:'EDITOR DE CENÁRIO',ed:1},{kb:['F3'],pad:null,t:'EDITOR DE PISTA',ed:2}])+
   (n?`<span class="k" style="margin-left:auto;color:#9BE7C4">🎮 ${n} CONTROLE${n>1?'S':''} CONECTADO${n>1?'S':''}</span>`:'');
  $('rmKM').innerHTML=keyRow([{kb:['↑','↓'],pad:['✚'],t:'MAPA'},{kb:['Q','E'],pad:['LB','RB'],t:'MODO'},{kb:['ESC'],pad:['B'],t:'VOLTAR'},{kb:['P'],pad:null,t:'DESENHAR PISTA'},mus]);
  $('rmBack').firstChild.innerHTML=kb(n?'B':'ESC',n)+'VOLTAR';okTxt();difHTML();
@@ -4783,11 +4783,12 @@ function homeHTML(keep){const n=pads().length,el=$('rmModes');
  el.innerHTML=MOD.map((o,i)=>`<div class="rm-mb${o.m==='online'?' ol':''}${i===RM.hi?' on':''}" data-i="${i}" style="--i:${i}"><div class="n">${o.m==='online'?svgOn:'<b>'+o.m+'</b>'}</div>
   <div class="t"><b>${o.n}</b><small>${sub(o)}</small></div><div class="who">${whoHTML(o.m)}</div><div class="ar">▶</div></div>`).join('')}
 function homeSel(i,snd){i=(i+MOD.length)%MOD.length;if(i!==RM.hi&&snd!==false)tick();RM.hi=i;$$('.rm-mb').forEach((e,j)=>e.classList.toggle('on',j===i));if(mode!==MOD[i].m)setMode(MOD[i].m)}
-function homeGo(){const o=MOD[RM.hi],el=$$('.rm-mb')[RM.hi];if(el){el.classList.remove('go');void el.offsetWidth;el.classList.add('go')}okS();setMode(o.m);
+function homeGo(){RM.saindo=performance.now();const o=MOD[RM.hi],el=$$('.rm-mb')[RM.hi];if(el){el.classList.remove('go');void el.offsetWidth;el.classList.add('go')}okS();setMode(o.m);
  setTimeout(()=>{if(state==='menu')show('map')},170)}
 $('rmKH').addEventListener('click',e=>{const q=e.target.closest('.ed');if(!q)return;if(/PISTA/.test(q.textContent)){if(window.PISTAS)PISTAS.abrir(null)}else{const b=$('bedit');if(b)b.click()}});
-$('rmModes').addEventListener('mouseover',e=>{const b=e.target.closest('.rm-mb');if(b&&+b.dataset.i!==RM.hi)homeSel(+b.dataset.i)});
-$('rmModes').addEventListener('click',e=>{const b=e.target.closest('.rm-mb');if(b){unlock();homeSel(+b.dataset.i,false);homeGo()}});
+/* passar o mouse só escolhe na tela inicial e nunca logo depois de confirmar (a animação do botão fazia o mouse "entrar" no vizinho e trocar o modo) */
+$('rmModes').addEventListener('mouseover',e=>{if(RM.scr!=='home'||performance.now()-(RM.saindo||0)<900)return;const b=e.target.closest('.rm-mb');if(b&&+b.dataset.i!==RM.hi)homeSel(+b.dataset.i)});
+$('rmModes').addEventListener('click',e=>{if(RM.scr!=='home'||performance.now()-(RM.saindo||0)<500)return;const b=e.target.closest('.rm-mb');if(b){unlock();homeSel(+b.dataset.i,false);homeGo()}});
 
 /* ---------- tela de mapa ---------- */
 const stepsHTML=c=>['JOGADORES','MAPA',mode==='online'?'SALA ONLINE':'GARAGEM','LARGADA'].map((s,i)=>`<span class="${i<c?'ok':i===c?'cur':''}">${i<c?'✓':i+1} ${s}</span>`).join('');
@@ -5778,6 +5779,7 @@ on('visuals',dt=>{for(const k of karts){if(k.trT===undefined)continue;k.trT+=dt;
 <script src="deluxe/dx-chars.js"></script>
 <script src="deluxe/dx-drive.js"></script>
 <script src="deluxe/dx-hud.js"></script>
+<script src="deluxe/dx-menu.js"></script>
 <script src="deluxe/dx-maps.js"></script>
 <script src="deluxe/dx-map-gelo.js"></script>
 <script src="deluxe/dx-map-candy.js"></script>
