@@ -29,6 +29,14 @@ function instancia(id,anim,alt){const g=T[id],o=THREE.SkeletonUtils.clone(g.scen
  /* volante */
  const K=DX.kit();K.tor(.42,.065,0x23262E,0,0,0,null,0,null,20);K.cyl(.11,.11,.1,DX.Mt(0xC9CED6),0,0,0,[PI/2,0,0]);K.box(.8,.06,.05,0x3A3F4A,0,0,0);K.box(.12,.07,.06,DX.P(0xFF3B30),0,.38,.02);
  const vol=K.build();vol.position.set(0,1.0,1.25);vol.rotation.x=-.5;vol.scale.setScalar(1.3);g.add(vol);
+ // Usa os punhos da pose exportada para encaixar o volante de cada modelo.
+ const left=I.ossos.MaoL,right=I.ossos.MaoR;
+ if(left&&right){
+  g.updateMatrixWorld(true);
+  const a=left.getWorldPosition(new THREE.Vector3()),b=right.getWorldPosition(new THREE.Vector3());
+  const span=a.distanceTo(b);
+  if(span>.25&&span<2.4){g.worldToLocal(vol.position.copy(a).lerp(b,.5));vol.scale.setScalar(span/.84)}
+ }
  const rig={glb:true,id,g,I,vol,p:{},st:0,look:0,hop:0,t:Math.random()*9,base:{}};
  for(const n of['Peito','Cabeca','Coluna'])if(I.ossos[n]){rig.base[n]=I.ossos[n];I.ossos[n].userData.q0=I.ossos[n].quaternion.clone()}
  g.userData.rig=rig;g.userData.ch=id;DX.rigs.push(rig);return g}}

@@ -34,17 +34,43 @@ if(window.PHONE)throw new Error('PHONEMODE');
    K.box(250,156,6,0xFFF4E0,winX,176,winZ);K.box(231,138,7,Gw(0xBCE5F5),winX,176,winZ+4);
    K.box(8,140,10,0xFFF4E0,winX,176,winZ+9);K.box(240,8,10,0xFFF4E0,winX,176,winZ+9);
    for(const s of[-1,1])for(let j=0;j<5;j++)K.cyl(6,6,186,Sf(0xE99B77),winX+s*(130+j*10),165,winZ+15,null,null,8);
+   // Gravura infantil na parede: foguete de papel, chama, lua e estrelas.
+   const mural=K.at(minX+155,175,minZ-57);
+   mural.rbox(152,140,5,2,0xD89960,0,0,0);
+   mural.box(144,132,2,0x263B62,0,0,3);
+   mural.cyl(16,16,1,0xF6C263,38,37,5,[PI/2,0,0],null,32);
+   const rocket=mural.at(-8,-3,6,[0,0,-.53]);
+   rocket.ext([[0,44],[13,20],[10,-20],[-10,-20],[-13,20]],1,0xFFF0CE,0,0,0);
+   rocket.ext([[-10,-12],[-25,-29],[-24,-7],[-12,10]],1,0xDE685A,0,0,0);
+   rocket.ext([[10,-12],[25,-29],[24,-7],[12,10]],1,0xDE685A,0,0,0);
+   rocket.ext([[-8,-21],[0,-48],[8,-21]],1,0xF5B54A,0,0,0);
+   rocket.cyl(7,7,2,0x497BA0,0,13,2,[PI/2,0,0],null,20);
+   for(const [x,y] of [[-54,40],[-44,10],[11,49],[46,-30],[22,-48],[-55,-29]]){
+    mural.box(8,2,1,0xFFE6B1,x,y,5);mural.box(2,8,1,0xFFE6B1,x,y,5);
+   }
    // Desk placed under the elevated road, deliberately below the collision surface.
    K.rbox(490,9,260,3,0xDEBB88,245,65,-220);
    for(const x of[30,460])for(const z of[-315,-120])K.box(15,64,15,0xC39765,x,31,z);
    K.box(110,58,94,0xD9A67C,425,30,-238);
    for(let y=15;y<60;y+=19){K.box(112,1.5,96,0xAB7C5A,425,y,-238);K.box(16,3,4,0x7E9BA1,425,y+7,-188)}
+   const lamp=K.at(436,70,-295);
+   lamp.cyl(23,27,6,P(0x287F83),0,3,0,null,null,24);
+   lamp.limb([0,5,0],[9,61,0],3.2,Mt(0xBEC7B4));
+   lamp.limb([9,61,0],[-22,85,0],3.2,Mt(0xBEC7B4));
+   lamp.ball(6,P(0x247C83),9,61,0);
+   const shade=lamp.at(-23,73,0,[0,0,-.32]);
+   shade.cyl(7,23,23,P(0x238B8D),0,0,0,null,null,28);
+   shade.cyl(21,21,1.3,Gw(0xFFF1BE),0,-12,0,null,null,28);
    // Bed under the elevated left turn, pillow and quilt.
    K.rbox(244,21,404,9,0xD7C4A8,-375,13,0);
    K.rbox(242,12,400,5,Sf(0xA7C6DB),-375,27,0);
    K.rbox(210,22,58,10,Sf(0xFFF3DB),-375,46,-169);
    K.box(245,84,10,0xD5B58E,-375,36,-207);
-   for(let z=-110;z<191;z+=42)K.box(237,.5,4,Sf(0x849FC7),-375,33.3,z);
+   const quilt=[0x526B9B,0x80A8BF,0xC2D6D0,0xD98B76];
+   for(let row=0;row<7;row++)for(let col=0;col<5;col++){
+    const x=-375+(col-2)*47,z=-105+row*43;
+    K.box(46,.42,42,Sf(quilt[(row+col*3)%4]),x,33.32,z);
+   }
    // Ruler climb: tick marks follow the actual track instead of a flat fake ramp.
    for(let j=0;j<24;j++){const p=B.at(B.uOf(3.3+j*.075),0);K.at(p.x,p.y+.11,p.z,[0,p.h,0]).box(j%5?5:12,.2,1,0x665136,-W/2+10,0,0)}
    // Central rug and toy building blocks (kept clear of the route).
@@ -52,6 +78,18 @@ if(window.PHONE)throw new Error('PHONEMODE');
    const rng=DX.rng(5804);
    for(let i=0;i<80;i++){const x=minX+rng()*(maxX-minX),z=minZ+rng()*(maxZ-minZ);if(B.dist(x,z)<W/2+26)continue;
     const c=COLORS[i%3],sz=10+rng()*10,k=K.at(x,0,z,[0,rng()*PI,0]);k.rbox(sz,sz,sz,1.3,P(c),0,sz/2,0);for(const a of[-1,1])for(const b of[-1,1])k.cyl(sz*.13,sz*.13,2,P(c),a*sz*.24,sz+1,b*sz*.24,null,null,8);
+   }
+   // Casinhas de madeira junto à reta, afastadas do asfalto e do trem.
+   for(let i=0;i<7;i++){
+    const x=-220+i*60,z=305+(i%2)*46;
+    if(B.dist(x,z)<W/2+35)continue;
+    const h=24+(i%3)*5,house=K.at(x,0,z,[0,.12*(i%3-1),0]);
+    house.box(35,h,27,0xF4D5A6,0,h/2,0);
+    house.ext([[-21,0],[0,17],[21,0]],32,P(COLORS[i%3]),0,h,0);
+    for(const face of[-1,1]){
+     house.box(8,17,1,0x437D86,0,8.5,face*13.7);
+     for(const side of[-1,1])house.box(6,7,1,0x52758A,side*11,h*.62,face*13.7);
+    }
    }
    // A huge teddy bear watching the race from the far side of the room.
    const bear=K.at(220,0,-15,[0,-.5,0]);bear.ball(38,Sf(0xBA8255),0,42,0,[1,1.15,.8]);bear.ball(31,Sf(0xC38B59),0,101,0);
@@ -92,6 +130,15 @@ if(window.PHONE)throw new Error('PHONEMODE');
    }
    // Train crossing. The middle wagon is a real open arch: collision only at its posts.
    const trainP=B.at(room.trainU,0),rail=DX.kit();for(const z of[-5,5])rail.box(244,.25,.7,Mt(0xA3A5AA),0,.18,z);for(let x=-120;x<=120;x+=9)rail.box(3,.4,15,0x805E49,x,0,0);
+   // Plataforma e relógio vistos da aproximação. O vagão vazado mantém a passagem.
+   const station=rail.at(-W/2-52,0,20);
+   station.rbox(72,3,25,1.4,0xAF7A51,0,1.5,0);
+   for(const x of[-27,27])station.box(3,23,3,0x327F85,x,14,0);
+   station.ext([[-38,0],[0,11],[38,0]],29,0xBF5254,0,25,0);
+   station.box(70,2,29,0xF8DC9A,0,25,0);
+   station.cyl(6,6,2,0xFFF2CF,0,27,-16,[PI/2,0,0],null,24);
+   station.box(1,4,.6,0x273954,0,28.5,-17.3);station.box(3.5,1,.6,0x273954,1.4,27,-17.3);
+   rail.box(2,14,2,0x36435C,-W/2-7,7,-12);
    room.rail=B.put(rail,trainP.x,trainP.y+.2,trainP.z,trainP.h);const train=new THREE.Group();room.rail.add(train);room.train=train;room.trainP=trainP;
    for(let car=0;car<3;car++){const tk=DX.kit(),x=car*27-27,c=COLORS[car];
     if(car===1){tk.box(24,2,16,P(c),x,18,0);for(const s of[-1,1])tk.box(2,18,16,P(c),x+s*11,9,0)}
@@ -123,7 +170,7 @@ if(window.PHONE)throw new Error('PHONEMODE');
   m.cool=Math.max(0,m.cool-dt);const prev=k.prog;oldStep(k,inp,dt);
   if(state!=='go'||k.fin||k.fallT>0)return;
   if(m.cool<=0&&Q.crossed(prev,k.prog,Math.round(room.tubeU*N),N)&&Q.lane(k.lat,W)===room.wrong){resetMotion(k);k.fallT=2;m.trip={t:0,x:k.x,y:k.y,z:k.z};say(k,'🌀 ASPIRADOR! VOLTANDO EM 1,8s','#EA5268');if(k.human)sfx(130,.35,'sawtooth',.06);return}
-  if(m.cool<=0&&!k.air){for(const dom of room.dom){const a=Q.domino(clock,dom.index);if(!a.danger)continue;const dx=k.x-dom.p.x,dz=k.z-dom.p.z,long=dx*Math.sin(dom.p.h)+dz*Math.cos(dom.p.h);if(Q.dominoCollision(clock,dom.index,k.lat,long,k.y-dom.p.y)){if(hitKart(k,{spin:.5,vmul:.45,msg:'🁢 DOMINÓ! OLHE A LUZ NO CHÃO.'}))m.cool=1.4;break}}
+  if(m.cool<=0&&!k.air){for(const dom of room.dom){const a=Q.domino(clock,dom.index);if(!a.danger)continue;const dx=k.x-dom.p.x,dz=k.z-dom.p.z,long=dx*Math.sin(dom.p.h)+dz*Math.cos(dom.p.h);const lateral=dx*Math.cos(dom.p.h)-dz*Math.sin(dom.p.h);if(Math.abs(lateral)<=W/2&&Q.dominoCollision(clock,dom.index,lateral,long,k.y-dom.p.y)){if(hitKart(k,{spin:.5,vmul:.45,msg:'🁢 DOMINÓ! OLHE A LUZ NO CHÃO.'}))m.cool=1.4;break}}
    const tr=Q.train(clock),p=room.trainP,dx=k.x-p.x,dz=k.z-p.z,lat=dx*Math.cos(p.h)-dz*Math.sin(p.h),long=dx*Math.sin(p.h)+dz*Math.cos(p.h),rel=lat-tr.x;
    if(Q.trainCollision(clock,lat,long,k.y-p.y)){if(hitKart(k,{spin:.6,vmul:.3,msg:'🚂 OLHE O SINAL DO TREM!'}))m.cool=1.4}
   }

@@ -14,19 +14,21 @@ const CH={
 capy:{body:{shirt:0x6F7F3A,chest:0x6F7F3A,sleeve:0xEDE3C8,fore:Sf(0x9B6A43),hand:Sf(0x7A5232),pants:0xB8A47A,shoe:0x5A3A22,skin:Sf(0x9B6A43)},lid:.15,mood:'zen',air:'none',
  head(H,B){const F=Sf(0x9B6A43),Fd=Sf(0x7A5232),Mz=Sf(0xB98A58);
   H.ball(.82,F,0,.62,-.08,[1.02,.9,1.1]);H.rbox(1.05,.78,.95,.36,Mz,0,.46,.62);H.ball(.2,0x3A2618,0,.72,1.08,[1.6,.7,.6]);
-  H.mirror((k,s)=>{k.ball(.05,0x2A1A10,.14,.6,1.11);k.rbox(.13,.2,.06,.03,0xFFFFFF,.08,.1,1.02)});
-  B.eye(-.5,.86,.42,.17,0x4A2C14,F,{brow:Fd});B.eye(.5,.86,.42,.17,0x4A2C14,F,{brow:Fd});
+  H.mirror((k,s)=>{k.ball(.05,0x2A1A10,.14,.6,1.11);k.rbox(.14,.15,.08,.035,0xFFF1CE,.08,.105,1.04)});
+  B.eye(-.50,.87,.57,.185,0x4A2C14,F,{brow:Fd});B.eye(.50,.87,.57,.185,0x4A2C14,F,{brow:Fd});
   B.mouth(0,.2,1.0,.2,0x3A2618);
   for(const s of[-1,1]){const e=H.sub('ear'+s,s*.56,1.18,-.4,[0,0,-s*.35]);e.ball(.19,F,0,.1,0,[1,1.15,.5]);e.ball(.11,Fd,0,.1,.06,[1,1.1,.4]);B.dang.push({n:'ear'+s,sw:.8,pt:.5,k:160,fl:.06})}
   /* chapéu de explorador com a laranja em cima (toda capivara zen tem uma) */
   const T=H.sub('hat',0,1.22,-.06,[-.12,0,.08]);T.cyl(1.0,1.02,.07,0xD8C08A,0,0,0,null,null,22);T.lathe([[.6,0],[.56,.3],[.4,.46],[0,.5]],0xD8C08A,0,.03,0);T.cyl(.61,.62,.11,0x6E4A2E,0,.1,0);B.dang.push({n:'hat',sw:.25,pt:.2,k:120});
+  // Costura clara na aba.
+  T.tor(.95,.024,0xF5DFAC,0,.036,0,[PI/2,0,0]);
   const O=T.sub('orange',0,.5,0);O.ball(.26,P(0xFF9A1F),0,.22,0,[1,.9,1]);O.ball(.08,Sf(0x3FA34D),.06,.46,0,[.5,1.4,.25],[0,0,-.5]);B.dang.push({n:'orange',sw:.5,pt:.4,k:70,d:4})},
- extra(T){T.tor(.4,.1,0xE85D2A,0,1.1,0,[PI/2,0,0]);T.rbox(.3,.26,.12,.05,0xC9A24A,-.3,.5,.5);T.box(.14,1.1,.06,0x5A3A22,.06,.72,.5,[0,0,.6])}},
+ extra(T){T.tor(.4,.1,0xE85D2A,0,1.1,0,[PI/2,0,0]);T.rbox(.3,.26,.12,.05,0xC9A24A,-.3,.5,.5);T.box(.14,1.1,.06,0x5A3A22,.06,.72,.5,[0,0,.6]);T.rbox(.75,.71,.35,.12,0x895C39,0,.62,-.55);T.rbox(.79,.25,.38,.085,0xBC8B54,0,.87,-.55);T.box(.12,.19,.05,0xE6C572,0,.76,-.76)}},
 
 fox:{body:{shirt:0x8A5A32,chest:0x8A5A32,sleeve:0x8A5A32,fore:Sf(0xF07A1E),hand:0x3A2A22,pants:0x5A4A3A,shoe:0x3A2A22,skin:Sf(0xF07A1E)},lid:-.5,tilt:.2,mood:'cocky',air:'one',
  head(H,B){const O=Sf(0xF07A1E),Cr=Sf(0xFFF1DC),Dk=0x2A1E18;
   H.ball(.76,O,0,.62,0,[1.08,.95,1]);H.mirror((k,s)=>{k.cone(.36,.7,Cr,.62,.38,.2,[0,0,-1.9],[1,1,.6],8);k.cone(.3,.5,Cr,.55,.2,.28,[0,0,-2.3],[1,1,.6],8)});
-  H.cone(.4,.85,Cr,0,.42,.82,[PI/2-.12,0,0],[1.05,1,.8],12);H.ball(.12,Dk,0,.5,1.24);
+  H.ball(.42,Cr,0,.43,.73,[1,.62,1.16]);H.ball(.145,Dk,0,.53,1.14,[1.12,.76,.72]);
   B.eye(-.3,.74,.58,.2,0x8A4A14,O,{brow:Dk});B.eye(.3,.74,.58,.2,0x8A4A14,O,{brow:Dk});B.mouth(.08,.2,.86,.2,Dk,{smirk:1});
   for(const s of[-1,1]){const e=H.sub('ear'+s,s*.48,1.2,-.1,[0,0,-s*.3]);e.cone(.3,.85,O,0,.36,0,null,[1,1,.55],8);e.cone(.18,.55,Sf(0x3A2A22),0,.36,.07,null,[1,1,.4],8);B.dang.push({n:'ear'+s,sw:.5,pt:.5,wind:.35,k:150,fl:.05})}
   /* touca de aviador com óculos na testa */
@@ -52,13 +54,13 @@ ricky:{body:{shirt:0xFF8A2A,chest:0xFF8A2A,sleeve:0xFF8A2A,fore:0xFF8A2A,hand:0x
 zorp:{body:{shirt:0x5B2A9A,chest:0x5B2A9A,sleeve:0x5B2A9A,fore:0x5B2A9A,hand:Sf(0x8BE36A),pants:0x3A1E6A,shoe:Mt(0xC9CED6),skin:Sf(0x8BE36A),arm:.14},lid:-.7,mood:'weird',air:'both',
  head(H,B){const Li=Sf(0x8BE36A),Ld=Sf(0x5DB84A),Mg=Gw(0xFF3FA4);
   H.ball(.9,Li,0,.86,-.05,[1.1,1.05,1]);H.ball(.5,Li,0,.3,.22,[1.0,.8,.9]);
-  B.eye(-.4,.72,.56,.3,null,Li,{white:P(0x0A0A14),pupil:0x0A0A14,glint:1});B.eye(.4,.72,.56,.3,null,Li,{white:P(0x0A0A14),pupil:0x0A0A14,glint:1});
+  B.eye(-.43,.79,.72,.32,null,Li,{white:P(0x0A0A14),pupil:0x0A0A14,glint:1});B.eye(.43,.79,.72,.32,null,Li,{white:P(0x0A0A14),pupil:0x0A0A14,glint:1});
   B.mouth(0,.18,.62,.13,0x2E6A22);H.ball(.05,Ld,-.06,.42,.68);H.ball(.05,Ld,.06,.42,.68);
   for(const s of[-1,1]){const a=H.sub('ant'+s,s*.3,1.7,-.1,[0,0,-s*.4]);a.limb([0,0,0],[0,.62,0],.04,Ld);a.ball(.13,Mg,0,.7,0);a.ball(.3,Ha(0xFF3FA4),0,.7,0);B.dang.push({n:'ant'+s,sw:1.6,pt:1.2,wind:.5,k:45,d:2.5,fl:.12})}
   /* capacete de vidro */
-  H.ball(1.28,Gl(0xBFF3FF),0,.78,0);H.tor(.62,.09,Mt(0xC9CED6),0,-.02,0,[PI/2,0,0])},
+  H.tube([[-.96,.24,.24],[-1.07,.8,.24],[-.88,1.38,.24]],.038,0xC7F6FF,false,12);H.tor(.62,.09,Mt(0xC9CED6),0,-.02,0,[PI/2,0,0])},
  extra(T){T.tor(.38,.07,Gw(0x22D3FF),0,1.08,0,[PI/2,0,0]);T.cyl(.2,.2,.06,Gw(0x22D3FF),0,.74,.5,[PI/2,0,0]);T.ball(.3,Ha(0x22D3FF),0,.74,.56);T.box(.06,.8,.05,Gw(0x9CFF2E),-.32,.6,.47,[0,0,.12]);T.box(.06,.8,.05,Gw(0x9CFF2E),.32,.6,.47,[0,0,-.12]);
-  T.rbox(.7,.8,.34,.14,Mt(0x9AA3B5),0,.75,-.5)}},
+  T.rbox(.78,.88,.4,.14,0x392961,0,.69,-.51);for(const side of[-1,1]){T.cyl(.14,.14,.65,Mt(0xAEC2DC),side*.29,.69,-.73);T.ball(.14,Gw(0x51F4E0),side*.29,.99,-.73)}}},
 
 hammy:{body:{shirt:0xD9313F,chest:Sf(0xE9A65A),sleeve:Sf(0xE9A65A),fore:Sf(0xE9A65A),hand:Sf(0xE9A65A),pants:0x2B3A6A,shoe:0xFFFFFF,skin:Sf(0xE9A65A),w:1.3,arm:.23,bicep:1},lid:-.5,mood:'tough',air:'both',
  head(H,B){const Go=Sf(0xE9A65A),Wh=Sf(0xFFF4E2),Pk=Sf(0xF4A0A8);
@@ -168,13 +170,18 @@ function mkRig(id,pose){id=CH[id]?id:'capy';const def=CH[id],o=def.body,solo=pos
  K.mirror((k,s)=>{if(solo){k.limb([.27*w,hy+.05,0],[.29*w,.24,.02],.23,o.pants);k.ball(.25,o.shoe,.29*w,.13,.14,[1,.72,1.5])}
   else{k.limb([.27*w,.08,.1],[.32,.16,.85],.23,o.pants);k.limb([.32,.14,.88],[.32,-.26,1.2],.2,o.pants);k.ball(.24,o.shoe,.32,-.34,1.34,[1,.72,1.5])}});
  const T=K.sub('torso',0,hy+.2,-.02);
- T.ball(.6,o.shirt,0,.42,0,[1.08*w,1.05,.86]);T.ball(.52,o.chest,0,.85,0,[1.3*w,.66,.84]);T.cyl(.2,.25,.3,o.skin,0,1.14,0);
+ // Uma única silhueta contínua do quadril até os ombros.
+ T.lathe([[.32,-.12],[.49,.02],[.57,.36],[.63,.72],[.61,.88],[.47,1.02],[.23,1.11],[0,1.12]],o.shirt,0,0,0,null,[w,1,.78],24);
+ if(o.chest!==o.shirt)T.ball(.47,o.chest,0,.69,.26,[1.08*w,.83,.48]);T.cyl(.2,.25,.3,o.skin,0,1.14,0);
+ T.tor(.46,.045,o.pants,0,.04,0,[PI/2,0,0],0,[w,.78,1]);
  const H=T.sub('head',0,1.2,.02);
- B.eye=(x,y,z,r,iris,lid,e)=>{e=e||{};const s=x<0?'L':'R';H.ball(r,e.white||0xFFFFFF,x,y,z);
-  const pu=H.sub('pu'+s,x,y,z);if(iris!=null)pu.ball(r*.62,iris,0,0,r*.5,[1,1,.55]);
-  if(e.big)pu.ball(r*.34,e.pupil,0,0,r*.72);else if(!e.glint)pu.ball(r*.36,e.pupil||0x0E0E16,0,0,r*.72,[1,1,.5]);
-  pu.ball(r*(e.glint?.2:.14),Gw(0xFFFFFF),r*.22,r*.26,r*(e.glint?.86:.94));if(e.glint)pu.ball(r*.1,Gw(0xFFFFFF),-r*.2,-r*.15,r*.9);
-  const ld=H.sub('ld'+s,x,y,z);ld.half(r*1.1,lid,0,0,0);if(e.brow)ld.rbox(r*1.8*(e.browS||1),r*.34*(e.browS||1),r*.4,r*.12,e.brow,0,r*.62,r*1.16,[.55,0,0]);
+ B.eye=(x,y,z,r,iris,lid,e)=>{e=e||{};const s=x<0?'L':'R';// Camadas convexas seguem a superfície do olho, inclusive na miniatura da garagem.
+  H.ball(r,e.white||0xFFF6E8,x,y,z,[1,1,.85]);
+  const pu=H.sub('pu'+s,x,y,z);
+  if(iris!=null)pu.ball(r*.69,iris,0,0,r*.71,[1,1,.35]);
+  if(!e.glint)pu.ball(r*(e.big?.42:.40),e.pupil||0x201B28,0,0,r*.89,[1,1,.28]);
+  pu.ball(r*.19,0xFFF9EA,-r*.23,r*.26,r*.94,[1,1,.42]);
+  const ld=H.sub('ld'+s,x,y,z,[def.lid||0,0,(x<0?-1:1)*(def.tilt||0)]);ld.half(r*1.1,lid,0,0,0);if(e.brow)ld.rbox(r*1.8*(e.browS||1),r*.34*(e.browS||1),r*.4,r*.12,e.brow,0,r*.62,r*1.16,[.55,0,0]);
   if(e.lash)ld.box(r*.5,r*.08,r*.3,0x2A1A10,(x<0?-1:1)*r*.95,r*.1,r*.5,[0,0,(x<0?1:-1)*.5]);
   B.eyes.push({s,r,sg:x<0?-1:1})};
  /* boca: sorriso fechado (mS) e boca aberta (mO) */
@@ -182,8 +189,8 @@ function mkRig(id,pose){id=CH[id]?id:'capy';const def=CH[id],o=def.body,solo=pos
   const b=H.sub('mO',x,y,z);b.ball(wd*1.05,0x2A0F0C,0,0,-.02,[1,.85,.5]);b.ball(wd*.6,0xE8627A,0,-wd*.4,.02,[1,.5,.5]);if(e.teeth)b.rbox(wd*1.5,wd*.3,.06,.03,0xFFFFFF,0,wd*.55,.05)};
  def.head(H,B);def.extra&&def.extra(T,B,R);
  /* braços */
- if(solo){for(const s of[-1,1]){const A=T.sub('arm'+s,s*.72*w,.9,0),e=[s*.1,-.6,.05],h=[s*.14,-1.14,.14];A.ball(ra*1.28,o.sleeve,0,0,0);A.limb([0,0,0],e,ra,o.sleeve);A.limb(e,h,ra*.9,o.fore);
-   A.ball(ra*1.35,o.hand,h[0],h[1]-.06,h[2],[1,1.1,.9]);if(o.bicep)A.ball(ra*1.6,o.sleeve,e[0]/2,e[1]/2,e[2]/2,[1,1.1,1.1]);if(o.band)A.tor(ra*1.3,ra*.6,P(o.band),e[0]/2,e[1]/2,e[2]/2,[PI/2,0,0])}}
+ if(solo){for(const s of[-1,1]){const A=T.sub('arm'+s,s*.59*w,.83,0),e=[s*.16,-.48,-.02],h=[s*.13,-.87,.22];A.ball(ra*1.28,o.sleeve,0,0,0);A.limb([0,0,0],e,ra,o.sleeve);A.limb(e,h,ra*.9,o.fore);
+   A.ball(ra*1.32,o.hand,h[0],h[1]-.06,h[2],[1,1.09,.9]);A.ball(ra*.65,o.hand,h[0]-s*ra*.7,h[1],h[2]+ra*.65);if(o.bicep)A.ball(ra*1.6,o.sleeve,e[0]/2,e[1]/2,e[2]/2,[1,1.1,1.1]);if(o.band)A.tor(ra*1.3,ra*.6,P(o.band),e[0]/2,e[1]/2,e[2]/2,[PI/2,0,0])}}
  else{for(const s of[-1,1]){const n=s<0?'L':'R',U=K.sub('ua'+n,0,0,0),F=K.sub('fa'+n,0,0,0),Hd=K.sub('hd'+n,0,0,0);
    U.ball(ra*1.28,o.sleeve,0,0,0);U.limb([0,0,0],[0,L1,0],ra,o.sleeve);if(o.bicep)U.ball(ra*1.6,o.sleeve,0,L1*.5,0,[1,1.15,1.1]);if(o.band)U.tor(ra*1.3,ra*.6,P(o.band),0,L1*.55,0,[PI/2,0,0]);
    F.ball(ra*1.05,o.sleeve,0,0,0);F.limb([0,0,0],[0,L2,0],ra*.9,o.fore);Hd.ball(ra*1.4,o.hand,0,0,0,[1,.95,1.1])}
@@ -191,7 +198,7 @@ function mkRig(id,pose){id=CH[id]?id:'capy';const def=CH[id],o=def.body,solo=pos
   K.limb([WC[0],WC[1],WC[2]],[0,.2,WC[2]+.38],.06,0x23262E);const V=K.sub('vol',WC[0],WC[1],WC[2],[WT,0,0]);V.tor(WR,.075,0x23262E,0,0,0);V.cyl(.13,.13,.1,Mt(0xC9CED6),0,0,0,[PI/2,0,0]);V.box(WR*1.9,.07,.05,0x3A3F4A,0,0,0);V.box(.07,WR,.05,0x3A3F4A,0,-WR/2,0);V.box(.12,.08,.06,P(0xFF3B30),0,WR-.02,.02)}
  const g=K.build(),p=g.userData.parts;
  const rig={id,def,g,p,solo,w,eyes:B.eyes,dang:B.dang.filter(d=>p[d.n]).map(d=>({g:p[d.n],bx:p[d.n].rotation.x,bz:p[d.n].rotation.z,ax:0,az:0,vx:0,vz:0,sw:d.sw||0,pt:d.pt||0,wind:d.wind||0,k:d.k||90,d:d.d||7,fl:d.fl||0,ph:Math.random()*9})),
-  bl:1+Math.random()*3,blink:0,lid:def.lid==null?-.5:def.lid,tilt:def.tilt||0,sh:[new V3(-.72*w,.9,0),new V3(.72*w,.9,0)],hand:[new V3(),new V3()],mode:[0,0,0],st:0,look:0,lookT:0,ex:{open:0,ang:0,cl:0},t:Math.random()*20,T0:hy+.2};
+  bl:1+Math.random()*3,blink:0,lid:def.lid==null?-.5:def.lid,tilt:def.tilt||0,sh:[new V3(-.59*w,.83,0),new V3(.59*w,.83,0)],hand:[new V3(),new V3()],mode:[0,0,0],st:0,look:0,lookT:0,ex:{open:0,ang:0,cl:0},t:Math.random()*20,T0:hy+.2};
  if(p.mO)p.mO.visible=false;g.userData.rig=rig;
  if(solo){g.userData.cabeca=p.head;g.userData.bracos=[{g:p['arm-1'],s:-1},{g:p.arm1,s:1}]}
  else{pose0(rig)}
@@ -219,7 +226,7 @@ DX.rigUpdate=function(rig,s){const dt=s.dt,p=rig.p,def=rig.def;rig.t+=dt;const t
  E.open=damp(E.open,dizzy||s.air||s.boost||win?1:0,14,dt);E.ang=damp(E.ang,sad?-.5:s.boost||s.drift?.35:0,8,dt);E.cl=damp(E.cl,win?.75:dizzy?.55:sad?.35:0,10,dt);
  for(const e of rig.eyes){const ld=p['ld'+e.s],pu=p['pu'+e.s];let a=rig.lid+(s.air?-.3:0);a=lerp(a,1.42,Math.max(bk,E.cl));ld.rotation.x=a;ld.rotation.z=e.sg*(rig.tilt+E.ang)+(dizzy?Math.sin(t*20+e.sg)*.3:0);
   pu.position.x=pu.userData.x0===undefined?(pu.userData.x0=pu.position.x):pu.userData.x0;pu.position.x+=clamp(rig.look*.5+(dizzy?Math.sin(t*22)*.6:0),-.6,.6)*e.r*.4;
-  pu.scale.setScalar(s.air||dizzy?.8:1)}
+  pu.scale.set(s.air||dizzy?.84:1,s.air||dizzy?.84:1,1)}
  if(p.jaw){p.jaw.rotation.x=E.open*.42*(def.jawK||1)+(def.jawK&&!E.open?Math.max(0,Math.sin(t*(race?9+s.f*8:3)))*.1*(race?s.f:.6):0)}
  else if(p.mO&&p.mS){const op=E.open>.4;p.mO.visible=op;p.mS.visible=!op;if(op)p.mO.scale.set(1,.5+E.open*.6+Math.sin(t*18)*.06,1)}
  else if(p.mO){p.mO.visible=E.open>.4}
